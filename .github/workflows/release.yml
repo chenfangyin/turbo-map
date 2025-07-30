@@ -108,33 +108,38 @@ jobs:
           asset_content_type: application/json
 
       - name: Notify release success (Discord)
-        if: success() && secrets.DISCORD_WEBHOOK_URL
+        if: success()
         run: |
-          curl -H "Content-Type: application/json" \
-               -d '{
-                 "embeds": [{
-                   "title": "🚀 Release Published Successfully",
-                   "description": "A new version of turbo-map has been published to npm and GitHub.",
-                   "color": 3066993,
-                   "fields": [
-                     {
-                       "name": "Version",
-                       "value": "${{ github.ref_name }}",
-                       "inline": true
-                     },
-                     {
-                       "name": "Repository",
-                       "value": "${{ github.repository }}",
-                       "inline": true
-                     },
-                     {
-                       "name": "Published by",
-                       "value": "${{ github.actor }}",
-                       "inline": true
-                     }
-                   ],
-                   "timestamp": "${{ github.event.head_commit.timestamp }}"
-                 }]
-               }' \
-               ${{ secrets.DISCORD_WEBHOOK_URL }}
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            curl -H "Content-Type: application/json" \
+                 -d '{
+                   "embeds": [{
+                     "title": "🚀 Release Published Successfully",
+                     "description": "A new version of turbo-map has been published to npm and GitHub.",
+                     "color": 3066993,
+                     "fields": [
+                       {
+                         "name": "Version",
+                         "value": "${{ github.ref_name }}",
+                         "inline": true
+                       },
+                       {
+                         "name": "Repository",
+                         "value": "${{ github.repository }}",
+                         "inline": true
+                       },
+                       {
+                         "name": "Published by",
+                         "value": "${{ github.actor }}",
+                         "inline": true
+                       }
+                     ],
+                     "timestamp": "${{ github.event.head_commit.timestamp }}"
+                   }]
+                 }' \
+                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            echo "✅ Discord notification sent successfully"
+          else
+            echo "ℹ️ Discord webhook not configured, skipping notification"
+          fi
         continue-on-error: true
