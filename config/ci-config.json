@@ -1,0 +1,69 @@
+{
+  "npm": {
+    "token": "${NPM_TOKEN}",
+    "registry": "${NPM_REGISTRY}",
+    "scope": "${NPM_SCOPE}",
+    "access": "public",
+    "tag": "latest"
+  },
+  "github": {
+    "token": "${GITHUB_TOKEN}",
+    "repository": "${GITHUB_REPOSITORY}",
+    "actor": "${GITHUB_ACTOR}",
+    "api": "https://api.github.com"
+  },
+  "release": {
+    "channel": "${RELEASE_CHANNEL}",
+    "autoPublish": "${AUTO_PUBLISH}",
+    "dryRun": "${DRY_RUN}",
+    "prerelease": false,
+    "draft": false,
+    "generateNotes": true
+  },
+  "docs": {
+    "branch": "${DOCS_BRANCH}",
+    "domain": "${DOCS_DOMAIN}",
+    "autoDeploy": true
+  },
+  "test": {
+    "coverageThreshold": "${TEST_COVERAGE_THRESHOLD}",
+    "timeout": "${TEST_TIMEOUT}",
+    "parallel": "${PARALLEL_TESTS}",
+    "nodeVersions": [16, 18, 20]
+  },
+  "build": {
+    "targets": "${BUILD_TARGETS}",
+    "minify": "${MINIFY}",
+    "sourceMap": "${GENERATE_SOURCEMAP}",
+    "clean": true
+  },
+  "security": {
+    "auditLevel": "${SECURITY_AUDIT_LEVEL}",
+    "dependencyCheck": "${DEPENDENCY_CHECK}",
+    "licenseCheck": "${LICENSE_CHECK}",
+    "vulnerabilityScan": true
+  },
+  "notifications": {
+    "slack": {
+      "webhook": "${SLACK_WEBHOOK_URL}",
+      "enabled": false
+    },
+    "discord": {
+      "webhook": "${DISCORD_WEBHOOK_URL}",
+      "enabled": false
+    },
+    "email": {
+      "enabled": "${EMAIL_NOTIFICATIONS}",
+      "recipients": []
+    }
+  },
+  "debug": {
+    "enabled": "${DEBUG}",
+    "verbose": "${VERBOSE_LOGGING}",
+    "logLevel": "info"
+  },
+  "secrets": {
+    "required": ["NPM_TOKEN", "GITHUB_TOKEN"],
+    "optional": ["SLACK_WEBHOOK_URL", "DISCORD_WEBHOOK_URL"]
+  }
+} 
