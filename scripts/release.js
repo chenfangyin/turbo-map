@@ -4,16 +4,21 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import ConfigManager from './config-manager.js';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const packageJsonPath = path.join(__dirname, '..', 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-// 初始化配置管理器
-const configManager = new ConfigManager();
+// 简单的配置验证
+function validateConfig() {
+  const npmToken = process.env.NPM_TOKEN;
+  if (!npmToken) {
+    console.error('❌ NPM_TOKEN 环境变量未设置');
+    return false;
+  }
+  return true;
+}
 
 function runCommand(command) {
   try {
@@ -66,7 +71,7 @@ function main() {
   }
 
   // 验证配置
-  if (!configManager.validateConfig()) {
+  if (!validateConfig()) {
     console.error('❌ 配置验证失败，请检查环境变量设置');
     process.exit(1);
   }
@@ -74,8 +79,7 @@ function main() {
   console.log(`🚀 Starting release process for ${versionType} version...`);
   
   // 显示发布配置
-  const releaseConfig = configManager.get('release');
-  console.log('📋 发布配置:', JSON.stringify(releaseConfig, null, 2));
+  console.log('📋 发布配置: NPM_TOKEN 已设置');
 
   // Check if working directory is clean
   try {
@@ -128,6 +132,7 @@ function main() {
   console.log('📦 The release workflow will automatically publish to npm and create a GitHub release.');
 }
 
-if (require.main === module) {
+// 检查是否作为主模块运行
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 } 
