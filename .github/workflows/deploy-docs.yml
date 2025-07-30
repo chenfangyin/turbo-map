@@ -22,8 +22,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -40,7 +40,7 @@ jobs:
           cp -r docs/* docs-site/ 2>/dev/null || true
           cp README.md docs-site/
           cp dist/* docs-site/
-          
+
           # Create API documentation
           echo "# API Documentation" > docs-site/api.md
           echo "" >> docs-site/api.md
@@ -74,8 +74,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './docs-site'
+          path: "./docs-site"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4

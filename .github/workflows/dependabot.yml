@@ -17,7 +17,14 @@ jobs:
 
       - name: Enable auto-merge for Dependabot PRs
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: |
+          if gh pr merge --auto --merge "$PR_URL"; then
+            echo "✅ Auto-merge successful for patch update"
+          else
+            echo "⚠️ Auto-merge failed, manual review required"
+            echo "This is normal for some PRs that require manual approval"
+            exit 0  # Don't fail the workflow
+          fi
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -28,4 +35,4 @@ jobs:
           git checkout ${{ github.head_ref }}
           npm ci
           npm run test:ci
-          npm run build 
+          npm run build

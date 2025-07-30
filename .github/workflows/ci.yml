@@ -118,3 +118,80 @@ jobs:
 
       - name: Run benchmarks
         run: npm run benchmark
+
+      - name: Notify on failure (Slack)
+        if: failure() && secrets.SLACK_WEBHOOK_URL
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          channel: "#ci-cd"
+          username: "CI/CD Bot"
+          icon_emoji: ":warning:"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+
+      - name: Notify on failure (Discord)
+        if: failure() && secrets.DISCORD_WEBHOOK_URL
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{
+                 "embeds": [{
+                   "title": "❌ CI/CD Pipeline Failed",
+                   "description": "The CI/CD pipeline for turbo-map has failed.",
+                   "color": 15158332,
+                   "fields": [
+                     {
+                       "name": "Repository",
+                       "value": "${{ github.repository }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Branch",
+                       "value": "${{ github.ref_name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Commit",
+                       "value": "${{ github.sha }}",
+                       "inline": true
+                     }
+                   ],
+                   "timestamp": "${{ github.event.head_commit.timestamp }}"
+                 }]
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
+        continue-on-error: true
+
+      - name: Notify on success (Discord)
+        if: success() && secrets.DISCORD_WEBHOOK_URL
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{
+                 "embeds": [{
+                   "title": "✅ CI/CD Pipeline Succeeded",
+                   "description": "The CI/CD pipeline for turbo-map has completed successfully.",
+                   "color": 3066993,
+                   "fields": [
+                     {
+                       "name": "Repository",
+                       "value": "${{ github.repository }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Branch",
+                       "value": "${{ github.ref_name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Commit",
+                       "value": "${{ github.sha }}",
+                       "inline": true
+                     }
+                   ],
+                   "timestamp": "${{ github.event.head_commit.timestamp }}"
+                 }]
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
+        continue-on-error: true

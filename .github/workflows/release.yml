@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   release:
@@ -17,9 +17,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "18"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
         run: npm ci
@@ -37,7 +37,17 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        run: npm publish
+        run: |
+          if npm publish; then
+            echo "✅ Successfully published to npm"
+          else
+            echo "❌ Failed to publish to npm"
+            echo "This might be due to:"
+            echo "- Invalid NPM_TOKEN"
+            echo "- Version already exists"
+            echo "- Insufficient permissions"
+            exit 1
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_REGISTRY: ${{ secrets.NPM_REGISTRY || 'https://registry.npmjs.org/' }}
@@ -54,23 +64,23 @@ jobs:
           release_name: Release ${{ github.ref }}
           body: |
             ## What's Changed
-            
+
             This release includes:
             - Bug fixes and improvements
             - Performance optimizations
             - Type safety enhancements
-            
+
             ## Installation
-            
+
             ```bash
             npm install turbo-map
             ```
-            
+
             ## Usage
-            
+
             ```javascript
             import { TurboMap } from 'turbo-map';
-            
+
             const map = new TurboMap();
             map.set({ id: 1, name: 'test' }, 'value');
             ```
@@ -95,4 +105,36 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/index.umd.min.js.map
           asset_name: turbo-map.min.js.map
-          asset_content_type: application/json 
+          asset_content_type: application/json
+
+      - name: Notify release success (Discord)
+        if: success() && secrets.DISCORD_WEBHOOK_URL
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{
+                 "embeds": [{
+                   "title": "🚀 Release Published Successfully",
+                   "description": "A new version of turbo-map has been published to npm and GitHub.",
+                   "color": 3066993,
+                   "fields": [
+                     {
+                       "name": "Version",
+                       "value": "${{ github.ref_name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Repository",
+                       "value": "${{ github.repository }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Published by",
+                       "value": "${{ github.actor }}",
+                       "inline": true
+                     }
+                   ],
+                   "timestamp": "${{ github.event.head_commit.timestamp }}"
+                 }]
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
+        continue-on-error: true

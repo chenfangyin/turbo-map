@@ -63,7 +63,9 @@
     "config:show": "node scripts/config-manager.js show",
     "config:secrets": "node scripts/config-manager.js secrets",
     "config:validate": "node scripts/config-manager.js validate",
-    "config:generate-env": "node scripts/config-manager.js generate-env"
+    "config:generate-env": "node scripts/config-manager.js generate-env",
+    "ci:status": "node scripts/ci-status.js",
+    "ci:check": "npm run ci:status"
   },
   "repository": {
     "type": "git",
@@ -86,6 +88,7 @@
     "dotenv": "^16.4.5",
     "eslint": "^9.32.0",
     "jest": "^30.0.5",
+    "js-yaml": "^4.1.0",
     "rimraf": "^6.0.1",
     "rollup": "^3.0.0",
     "ts-jest": "^29.4.0",

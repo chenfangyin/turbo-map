@@ -213,7 +213,7 @@ function main() {
 }
 
 // 检查是否作为主模块运行
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === `file://${process.argv[1]}` || process.argv[1].endsWith('config-manager.js')) {
   main();
 }
 
