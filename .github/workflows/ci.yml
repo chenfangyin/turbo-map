@@ -44,7 +44,7 @@ jobs:
           node -e "import('./dist/index.esm.js').then(m => { console.log('ESM build works'); });"
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage/lcov.info
           flags: unittests
