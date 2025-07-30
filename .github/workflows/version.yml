@@ -1,8 +1,6 @@
 name: Version Management
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       version_type:
@@ -18,7 +16,6 @@ on:
 jobs:
   version:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
