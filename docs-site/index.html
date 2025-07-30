@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turbo Map - High-performance Map Implementation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .code-block pre {
+            margin: 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+        }
+        
+        .badges {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Turbo Map</h1>
+            <p>High-performance, type-safe Map implementation that supports complex nested objects as keys</p>
+            
+            <div class="badges">
+                <span class="badge">TypeScript</span>
+                <span class="badge">High Performance</span>
+                <span class="badge">ES6 Compatible</span>
+                <span class="badge">Memory Optimized</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2>✨ Features</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>🔑 Complex Object Keys</h3>
+                    <p>Support for nested objects, arrays, and complex data structures as keys with deep equality comparison.</p>
+                </div>
+                <div class="feature">
+                    <h3>⚡ High Performance</h3>
+                    <p>Optimized for speed with intelligent caching and memory management strategies.</p>
+                </div>
+                <div class="feature">
+                    <h3>🛡️ Type Safe</h3>
+                    <p>Full TypeScript support with comprehensive type definitions and generic constraints.</p>
+                </div>
+                <div class="feature">
+                    <h3>🔄 ES6 Compatible</h3>
+                    <p>100% compatible with native ES6 Map API, drop-in replacement for existing code.</p>
+                </div>
+                <div class="feature">
+                    <h3>🧠 Memory Optimized</h3>
+                    <p>Advanced memory management with automatic cleanup and LRU caching strategies.</p>
+                </div>
+                <div class="feature">
+                    <h3>🔌 Plugin System</h3>
+                    <p>Extensible plugin architecture for custom behaviors and optimizations.</p>
+                </div>
+            </div>
+            
+            <h2>🚀 Quick Start</h2>
+            <div class="code-block">
+                <pre><code>// Install
+npm install turbo-map
+
+// Import
+import { TurboMap } from 'turbo-map';
+
+// Create instance
+const map = new TurboMap();
+
+// Use complex objects as keys
+const user = { id: 1, name: 'John', settings: { theme: 'dark' } };
+map.set(user, 'user data');
+
+// Retrieve value
+const data = map.get(user); // 'user data'
+
+// Check if key exists
+const exists = map.has(user); // true
+
+// Iterate over entries
+for (const [key, value] of map) {
+    console.log(key, value);
+}</code></pre>
+            </div>
+            
+            <h2>📦 Installation</h2>
+            <div class="code-block">
+                <pre><code>npm install turbo-map
+# or
+yarn add turbo-map
+# or
+pnpm add turbo-map</code></pre>
+            </div>
+            
+            <h2>🔗 Links</h2>
+            <p style="text-align: center; margin: 20px 0;">
+                <a href="https://github.com/chenfangyin/turbo-map" class="btn">View on GitHub</a>
+                <a href="https://www.npmjs.com/package/turbo-map" class="btn">View on npm</a>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Made with ❤️ by <a href="https://github.com/chenfangyin" style="color: white;">chenfangyin</a></p>
+        </div>
+    </div>
+</body>
+</html> 

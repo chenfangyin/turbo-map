@@ -37,21 +37,39 @@ jobs:
       - name: Create documentation site
         run: |
           mkdir -p docs-site
-          cp -r docs/* docs-site/
+          cp -r docs/* docs-site/ 2>/dev/null || true
           cp README.md docs-site/
           cp dist/* docs-site/
-          echo "# Turbo Map Documentation" > docs-site/index.md
-          echo "" >> docs-site/index.md
-          echo "Welcome to the Turbo Map documentation." >> docs-site/index.md
-          echo "" >> docs-site/index.md
-          echo "## Quick Start" >> docs-site/index.md
-          echo "" >> docs-site/index.md
-          echo '```javascript' >> docs-site/index.md
-          echo "import { TurboMap } from 'turbo-map';" >> docs-site/index.md
-          echo "" >> docs-site/index.md
-          echo "const map = new TurboMap();" >> docs-site/index.md
-          echo "map.set({ id: 1, name: 'test' }, 'value');" >> docs-site/index.md
-          echo '```' >> docs-site/index.md
+          
+          # Create API documentation
+          echo "# API Documentation" > docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "## TurboMap Class" >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "### Constructor" >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo '```typescript' >> docs-site/api.md
+          echo "new TurboMap<K, V>(options?: TurboMapOptions)" >> docs-site/api.md
+          echo '```' >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "### Methods" >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "- `set(key: K, value: V): TurboMap<K, V>`" >> docs-site/api.md
+          echo "- `get(key: K): V | undefined`" >> docs-site/api.md
+          echo "- `has(key: K): boolean`" >> docs-site/api.md
+          echo "- `delete(key: K): boolean`" >> docs-site/api.md
+          echo "- `clear(): void`" >> docs-site/api.md
+          echo "- `forEach(callback: (value: V, key: K, map: TurboMap<K, V>) => void): void`" >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "### Iterators" >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "- `keys(): IterableIterator<K>`" >> docs-site/api.md
+          echo "- `values(): IterableIterator<V>`" >> docs-site/api.md
+          echo "- `entries(): IterableIterator<[K, V]>`" >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "### Properties" >> docs-site/api.md
+          echo "" >> docs-site/api.md
+          echo "- `size: number`" >> docs-site/api.md
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
