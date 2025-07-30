@@ -2,8 +2,8 @@
 
 > High-performance, type-safe Map implementation that supports complex nested objects as keys, fully compatible with ES Map API
 
-[![CI/CD](https://github.com/chenfangyin/turbo-map/workflows/CI%2FCD/badge.svg)](https://github.com/chenfangyin/turbo-map/actions)
-[![Release](https://github.com/chenfangyin/turbo-map/workflows/Release/badge.svg)](https://github.com/chenfangyin/turbo-map/actions)
+[![CI/CD](https://github.com/chenfangyin/turbo-map/workflows/ci/badge.svg)](https://github.com/chenfangyin/turbo-map/actions)
+[![Release](https://github.com/chenfangyin/turbo-map/workflows/release/badge.svg)](https://github.com/chenfangyin/turbo-map/actions)
 [![npm version](https://badge.fury.io/js/turbo-map.svg)](https://badge.fury.io/js/turbo-map)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
