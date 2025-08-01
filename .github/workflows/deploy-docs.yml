@@ -52,7 +52,7 @@ jobs:
             ln -sf ../CHANGELOG.md docs-site/CHANGELOG.md 2>/dev/null || true
           fi
           
-          cp dist/* docs-site/
+          cp -r dist/* docs-site/
 
           # Create API documentation
           echo "# API Documentation" > docs-site/api.md
