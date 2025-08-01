@@ -92,7 +92,7 @@ bun add github:chenfangyin/turbo-map
 
 # 安裝特定分支或標籤
 npm install github:chenfangyin/turbo-map#main
-npm install github:chenfangyin/turbo-map#v1.0.0
+npm install github:chenfangyin/turbo-map#v1.0.1
 ```
 
 #### 型別定義

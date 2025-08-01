@@ -8,7 +8,7 @@
 [![npm version](https://badge.fury.io/js/turbo-map.svg)](https://badge.fury.io/js/turbo-map)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-14+-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Test Coverage](https://img.shields.io/badge/Test%20Coverage-62.29%25-brightgreen.svg)](https://github.com/chenfangyin/turbo-map)
 [![Code Quality](https://img.shields.io/badge/Code%20Quality-A%2B-brightgreen.svg)](https://github.com/chenfangyin/turbo-map)
 
@@ -24,7 +24,8 @@
 
 ## Documentation
 
-- [English Documentation](./docs/en/README.md) *(Recommended)*
+- [Developer Documentation](https://chenfangyin.github.io/turbo-map/) *(Recommended)*
+- [English Documentation](./docs/en/README.md)
 - [简体中文文档](./docs/zh-CN/README.md)
 - [繁體中文文檔](./docs/zh-TW/README.md)
 - [日本語ドキュメント](./docs/ja/README.md)
@@ -32,7 +33,7 @@
 ## Installation
 
 ### System Requirements
-- Node.js >= 14.0.0
+- Node.js >= 18.0.0
 - TypeScript >= 4.0.0 (recommended)
 
 ### Package Managers

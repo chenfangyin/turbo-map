@@ -8,6 +8,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,8 +90,6 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_ACTOR: ${{ github.actor }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
@@ -98,6 +99,10 @@ jobs:
             This release includes:
             - Bug fixes and improvements
             - Performance optimizations
+            - ESLint compatibility fixes
+            - ES module import fixes
+            - Benchmark script removal
+            - Documentation deployment fixes
             - Type safety enhancements
 
             ## Installation
