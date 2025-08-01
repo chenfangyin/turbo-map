@@ -13,6 +13,7 @@
 - [🔄 Migration Guide](#-migration-guide)
 - [🚀 Performance Comparison](#-performance-comparison)
 - [🔧 Troubleshooting](#-troubleshooting)
+- [📦 Release Process](#-release-process)
 - [📄 License](#-license)
 - [🤝 Contributing](#-contributing)
 
@@ -177,13 +178,13 @@ console.log(turboMap.toString()) // "[object TurboMap]"
 
 #### `createTurboMap<K, V>(entries?, options?)`
 
-Create a TurboMap instance.
+Create an enhanced TurboMap instance with advanced features.
 
 **Parameters:**
 - `entries?` - Initial key-value pairs array or iterable object
 - `options?` - Configuration options
 
-**Returns:** `TurboMapLike<K, V>`
+**Returns:** `EnhancedTurboMapLike<K, V>`
 
 **Overloads:**
 ```typescript
@@ -195,35 +196,59 @@ createTurboMap<{ id: number }, string>([
 // Configuration only
 createTurboMap<{ id: number }, string>({
   enableCache: true,
-  cacheMaxSize: 1000
+  cacheMaxSize: 1000,
+  enablePlugins: true,
+  enableAsync: true
 })
 
 // Array + configuration
 createTurboMap<{ id: number }, string>([
   [{ id: 1 }, 'value1']
 ], {
-  enableCache: true
+  enableCache: true,
+  enableDiagnostics: true
 })
 ```
 
 ### Configuration Options
 
-#### `TurboMapOptions`
+#### `EnhancedTurboMapOptions`
 
 ```typescript
-interface TurboMapOptions {
-  /** Whether to cache serialization results for performance */
+interface EnhancedTurboMapOptions {
+  // Serialization options
   enableCache?: boolean
-  /** Maximum size of serialization cache */
   cacheMaxSize?: number
-  /** Whether to enable strict mode (stricter type checking) */
-  strictMode?: boolean
-  /** Whether to enable performance monitoring */
+  enableAdaptiveSerialization?: boolean
+  
+  // Performance options
   enableMetrics?: boolean
-  /** Whether to enable automatic memory management */
   enableAutoCleanup?: boolean
-  /** Memory cleanup interval (milliseconds) */
   cleanupInterval?: number
+  
+  // Caching options
+  enableTieredCache?: boolean
+  l1CacheSize?: number
+  l2CacheSize?: number
+  promoteThreshold?: number
+  
+  // Error recovery options
+  enableErrorRecovery?: boolean
+  maxRetries?: number
+  fallbackMode?: boolean
+  
+  // Plugin options
+  enablePlugins?: boolean
+  pluginTimeout?: number
+  
+  // Diagnostic options
+  enableDiagnostics?: boolean
+  trackPerformance?: boolean
+  
+  // Async options
+  enableAsync?: boolean
+  batchSize?: number
+  maxConcurrency?: number
 }
 ```
 
@@ -232,12 +257,12 @@ interface TurboMapOptions {
 #### Standard Map Methods
 
 ```typescript
-interface TurboMapLike<K, V> {
+interface EnhancedTurboMapLike<K, V> {
   /** Number of key-value pairs in the map */
   readonly size: number
   
   /** Set key-value pair, supports chaining */
-  set(key: K, value: V): TurboMapLike<K, V>
+  set(key: K, value: V): EnhancedTurboMapLike<K, V>
   
   /** Get value for specified key */
   get(key: K): V | undefined
@@ -261,45 +286,93 @@ interface TurboMapLike<K, V> {
   entries(): IterableIterator<[K, V]>
   
   /** Iterate over all key-value pairs */
-  forEach(callback: (value: V, key: K, map: TurboMapLike<K, V>) => void): void
+  forEach(callback: (value: V, key: K, map: EnhancedTurboMapLike<K, V>) => void): void
 }
 ```
 
-#### 🚀 TurboMap Exclusive Methods
+#### 🚀 Enhanced Methods
 
 ```typescript
-interface TurboMapLike<K, V> {
-  /** Batch set key-value pairs */
-  setAll(entries: [K, V][]): TurboMapLike<K, V>
-  
-  /** Batch get values */
+interface EnhancedTurboMapLike<K, V> {
+  // Batch operations
+  setAll(entries: [K, V][]): EnhancedTurboMapLike<K, V>
   getAll(keys: K[]): (V | undefined)[]
+  deleteAll(keys: K[]): boolean[]
   
-  /** Conditional search */
+  // Advanced queries
   findByValue(predicate: (value: V, key: K) => boolean): [K, V] | undefined
+  filter(predicate: (value: V, key: K) => boolean): [K, V][]
+  mapValues<U>(transform: (value: V, key: K) => U): EnhancedTurboMapLike<K, U>
   
-  /** Get performance metrics */
-  getMetrics(): PerformanceMetrics
+  // Statistics and diagnostics
+  getMetrics(): {
+    size: number
+    operationCount: number
+    cacheHits: number
+    cacheMisses: number
+    cacheHitRate: number
+    errorCount: number
+    errorRate: number
+    pluginStats?: unknown
+    cacheStats?: unknown
+    serializerStats?: unknown
+  }
   
-  /** Get debug information */
-  debug(): DebugInfo
+  debug(): {
+    size: number
+    internalMapSize: number
+    keyMapSize: number
+    config: unknown
+    health: unknown
+    diagnostics: unknown
+  }
   
-  /** Add plugin */
-  addPlugin(plugin: TurboMapPlugin<K, V>): void
+  getDiagnostics(): {
+    performanceProfile: PerformanceProfile
+    memoryUsage: MemoryDiagnostic
+    errorAnalysis: ErrorAnalysis
+    optimizationSuggestions: OptimizationSuggestion[]
+    healthScore: number
+    recommendations: string[]
+  } | null
   
-  /** Remove plugin */
-  removePlugin(pluginName: string): boolean
+  getHealthStatus(): {
+    healthy: boolean
+    errorRate: number
+    cacheHitRate: number
+    inFallbackMode: boolean
+    score: number
+  }
   
-  /** Manual memory optimization */
-  optimizeMemory(): void
+  // Plugin management
+  addPlugin(plugin: TurboMapPlugin<K, V>): Promise<boolean>
+  removePlugin(pluginName: string): Promise<boolean>
+  enablePlugin(pluginName: string): Promise<boolean>
+  disablePlugin(pluginName: string): Promise<boolean>
+  getPluginStats(): {
+    totalPlugins: number
+    enabledPlugins: number
+    totalExecutions: number
+    totalErrors: number
+    errorRate: number
+  } | null
   
-  /** Estimate memory usage */
-  estimateMemoryUsage(): number
+  // Async operations
+  toAsync(): AsyncTurboMapLike<K, V>
   
-  /** Analyze key distribution */
-  analyzeKeyDistribution(keys: string[]): Record<string, number>
+  // Performance optimization
+  optimize(): void
+  reset(): void
   
-  /** Get serialized key string (for debugging) */
+  // Serialization
+  serialize(): string
+  clone(): EnhancedTurboMapLike<K, V>
+  
+  // Memory management
+  cleanup(): void
+  compact(): void
+  
+  // Debug tools
   getSerializedKey(key: K): string
 }
 ```
@@ -850,6 +923,100 @@ console.log('Key distribution:', keyDistribution)
 const serializedKey = cache.getSerializedKey({ id: 1, name: 'test' })
 console.log('Serialization result:', serializedKey)
 ```
+
+## 📦 Release Process
+
+### ⚠️ Important Notice
+
+**Regular code pushes do NOT trigger npm releases!**
+
+- ❌ `git push origin main` - Will NOT publish to npm
+- ❌ `git push origin feature-branch` - Will NOT publish to npm
+- ✅ Only pushing version tags triggers releases: `git push origin v1.0.1`
+
+### Release Methods
+
+#### 1. Automatic Release (Recommended)
+```bash
+# Update version and trigger release
+npm run release:patch     # Patch version (1.0.0 → 1.0.1)
+npm run release:minor     # Minor version (1.0.0 → 1.1.0)
+npm run release:major     # Major version (1.0.0 → 2.0.0)
+```
+
+#### 2. Manual Release
+```bash
+# 1. Update version
+npm version patch
+
+# 2. Build and test
+npm run build
+npm run test:ci
+npm run lint
+npm run type-check
+
+# 3. Publish to npm
+npm publish
+
+# 4. Push code and tags
+git push origin main
+git push origin v1.0.1
+```
+
+### 🔒 Security Mechanisms
+
+#### Preventing Accidental Releases
+- **Tag Trigger**: Only pushing `v*` tags triggers releases
+- **Permission Control**: Requires correct `NPM_TOKEN` environment variable
+- **Version Check**: Prevents duplicate releases of the same version
+- **Quality Gates**: Must pass all tests and checks before release
+
+#### Daily Development Workflow
+```bash
+# Daily development - Safe, won't trigger releases
+git add .
+git commit -m "feat: add new feature"
+git push origin main
+
+# Only create tags when releasing
+npm run release:patch
+# This automatically creates and pushes tags, triggering release
+```
+
+### Release Checklist
+
+#### Code Quality
+- [ ] All tests pass (`npm run test:ci`)
+- [ ] Code style check passes (`npm run lint`)
+- [ ] Type checking passes (`npm run type-check`)
+- [ ] Build succeeds (`npm run build`)
+- [ ] Security check passes (`npm run security:check`)
+
+#### Version Management
+- [ ] Version number correctly updated
+- [ ] CHANGELOG.md updated
+- [ ] Commit messages follow conventions
+
+#### Configuration Check
+- [ ] npm login status normal
+- [ ] GitHub Secrets configured
+- [ ] Environment variables set correctly
+- [ ] CI/CD configuration validated (`npm run ci:test`)
+
+### 🚀 Release Process Explanation
+
+#### Automatic Release Process
+1. **Run release command**: `npm run release:patch/minor/major`
+2. **Automatic checks**: Tests, build, security checks
+3. **Auto version update**: Update package.json version
+4. **Auto commit code**: Commit changes and create tags
+5. **Auto push tags**: Push tags trigger GitHub Actions
+6. **Auto publish**: GitHub Actions automatically publish to npm
+
+#### Trigger Conditions
+- ✅ **Will trigger**: Pushing version tags (`git push origin v1.0.1`)
+- ❌ **Won't trigger**: Regular code pushes (`git push origin main`)
+- ❌ **Won't trigger**: Feature branch pushes (`git push origin feature-branch`)
 
 ## 📄 License
 

@@ -63,7 +63,7 @@
     "logLevel": "info"
   },
   "secrets": {
-    "required": ["NPM_TOKEN", "GITHUB_TOKEN"],
-    "optional": ["SLACK_WEBHOOK_URL", "DISCORD_WEBHOOK_URL"]
+    "required": ["NPM_TOKEN"],
+    "optional": ["GITHUB_TOKEN", "SLACK_WEBHOOK_URL", "DISCORD_WEBHOOK_URL"]
   }
 } 

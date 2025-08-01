@@ -35,6 +35,12 @@ jobs:
       - name: Run tests
         run: npm run test:ci
 
+      - name: Security check
+        run: npm run security:check
+
+      - name: Performance benchmark
+        run: npm run benchmark
+
       - name: Build project
         run: npm run build
 
@@ -42,6 +48,34 @@ jobs:
         run: |
           node -e "const { TurboMap } = require('./dist/index.js'); console.log('CommonJS build works');"
           node -e "import('./dist/index.esm.js').then(m => { console.log('ESM build works'); });"
+
+      - name: Validate package.json
+        run: |
+          echo "🔍 验证 package.json 配置..."
+          echo "📦 包名称: $(node -p "require('./package.json').name")"
+          echo "📋 版本: $(node -p "require('./package.json').version")"
+          echo "📝 描述: $(node -p "require('./package.json').description")"
+          echo "🔗 主页: $(node -p "require('./package.json').homepage")"
+          echo "📄 许可证: $(node -p "require('./package.json').license")"
+          echo "👤 作者: $(node -p "require('./package.json').author")"
+          
+          # 验证必需字段
+          if [ -z "$(node -p "require('./package.json').name")" ]; then
+            echo "❌ 缺少包名称"
+            exit 1
+          fi
+          
+          if [ -z "$(node -p "require('./package.json').version")" ]; then
+            echo "❌ 缺少版本号"
+            exit 1
+          fi
+          
+          if [ -z "$(node -p "require('./package.json').description")" ]; then
+            echo "❌ 缺少描述"
+            exit 1
+          fi
+          
+          echo "✅ package.json 验证通过"
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3

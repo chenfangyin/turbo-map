@@ -33,19 +33,38 @@ jobs:
       - name: Run tests
         run: npm run test:ci
 
+      - name: Security check
+        run: npm run security:check
+
+      - name: Performance benchmark
+        run: npm run benchmark
+
       - name: Build project
         run: npm run build
 
       - name: Publish to npm
         run: |
+          echo "🔍 检查发布前状态..."
+          echo "📦 包名称: ${{ env.npm_package_name }}"
+          echo "📋 版本: ${{ env.npm_package_version }}"
+          echo "🔐 发布配置: ${{ env.npm_package_publishConfig }}"
+          
           if npm publish; then
             echo "✅ Successfully published to npm"
+            echo "📦 发布成功: ${{ env.npm_package_name }}@${{ env.npm_package_version }}"
           else
             echo "❌ Failed to publish to npm"
-            echo "This might be due to:"
+            echo "🔍 可能的原因:"
             echo "- Invalid NPM_TOKEN"
             echo "- Version already exists"
             echo "- Insufficient permissions"
+            echo "- Network issues"
+            echo ""
+            echo "🔧 故障排除:"
+            echo "1. 检查 NPM_TOKEN 是否正确设置"
+            echo "2. 验证版本号是否已存在"
+            echo "3. 确认 npm 账户权限"
+            echo "4. 检查网络连接"
             exit 1
           fi
         env:
@@ -132,14 +151,67 @@ jobs:
                          "name": "Published by",
                          "value": "${{ github.actor }}",
                          "inline": true
+                       },
+                       {
+                         "name": "npm Package",
+                         "value": "https://www.npmjs.com/package/turbo-map",
+                         "inline": false
+                       },
+                       {
+                         "name": "GitHub Release",
+                         "value": "https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}",
+                         "inline": false
                        }
                      ],
-                     "timestamp": "${{ github.event.head_commit.timestamp }}"
+                     "timestamp": "${{ github.event.head_commit.timestamp }}",
+                     "footer": {
+                       "text": "TurboMap - High-performance Map implementation"
+                     }
                    }]
                  }' \
                  "${{ secrets.DISCORD_WEBHOOK_URL }}"
             echo "✅ Discord notification sent successfully"
           else
             echo "ℹ️ Discord webhook not configured, skipping notification"
+          fi
+        continue-on-error: true
+
+      - name: Notify release failure (Discord)
+        if: failure()
+        run: |
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            curl -H "Content-Type: application/json" \
+                 -d '{
+                   "embeds": [{
+                     "title": "❌ Release Failed",
+                     "description": "Failed to publish turbo-map to npm.",
+                     "color": 15158332,
+                     "fields": [
+                       {
+                         "name": "Version",
+                         "value": "${{ github.ref_name }}",
+                         "inline": true
+                       },
+                       {
+                         "name": "Repository",
+                         "value": "${{ github.repository }}",
+                         "inline": true
+                       },
+                       {
+                         "name": "Workflow",
+                         "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                         "inline": false
+                       }
+                     ],
+                     "timestamp": "${{ github.event.head_commit.timestamp }}",
+                     "footer": {
+                       "text": "Please check the workflow logs for details"
+                     }
+                   }]
+                 }' \
+                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            echo "✅ Discord failure notification sent"
+          else
+            echo "ℹ️ Discord webhook not configured, skipping failure notification"
           fi
         continue-on-error: true

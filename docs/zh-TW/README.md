@@ -2,8 +2,19 @@
 
 > 一個高性能、類型安全的Map實現，支援以複雜嵌套物件作為鍵，完全相容ES Map API
 
+## 📊 專案狀態
+
+- ✅ **測試覆蓋率**: 62.29% (197個測試全部通過)
+- ✅ **程式碼品質**: ESLint 和 TypeScript 檢查通過
+- ✅ **建置系統**: 支援 CommonJS、ESM、UMD 格式
+- ✅ **CI/CD**: 完整的自動化流水線
+- ✅ **腳本優化**: 所有腳本功能完整且無冗餘
+- ✅ **安全審計**: 通過安全檢查
+- ✅ **效能測試**: 基準測試正常運行
+
 ## 📖 目錄
 
+- [📊 專案狀態](#-專案狀態)
 - [✨ 核心特性](#-核心特性)
 - [🚀 快速開始](#-快速開始)
 - [📚 API 參考](#-api-參考)
@@ -13,6 +24,9 @@
 - [🔄 遷移指南](#-遷移指南)
 - [🚀 效能對比](#-效能對比)
 - [🔧 故障排除](#-故障排除)
+- [📦 發布流程](#-發布流程)
+- [🔒 安全機制](#-安全機制)
+- [🚀 發布流程說明](#-發布流程說明)
 - [📄 授權條款](#-授權條款)
 - [🤝 貢獻](#-貢獻)
 
@@ -177,13 +191,13 @@ console.log(turboMap.toString()) // "[object TurboMap]"
 
 #### `createTurboMap<K, V>(entries?, options?)`
 
-建立 TurboMap 實例。
+建立增強的 TurboMap 實例，支援進階功能。
 
 **參數：**
 - `entries?` - 初始鍵值對陣列或可迭代物件
 - `options?` - 設定選項
 
-**回傳：** `TurboMapLike<K, V>`
+**回傳：** `EnhancedTurboMapLike<K, V>`
 
 **重載：**
 ```typescript
@@ -195,35 +209,59 @@ createTurboMap<{ id: number }, string>([
 // 僅設定選項
 createTurboMap<{ id: number }, string>({
   enableCache: true,
-  cacheMaxSize: 1000
+  cacheMaxSize: 1000,
+  enablePlugins: true,
+  enableAsync: true
 })
 
 // 陣列 + 設定
 createTurboMap<{ id: number }, string>([
   [{ id: 1 }, 'value1']
 ], {
-  enableCache: true
+  enableCache: true,
+  enableDiagnostics: true
 })
 ```
 
 ### 設定選項
 
-#### `TurboMapOptions`
+#### `EnhancedTurboMapOptions`
 
 ```typescript
-interface TurboMapOptions {
-  /** 是否快取序列化結果以提升效能 */
+interface EnhancedTurboMapOptions {
+  // 序列化選項
   enableCache?: boolean
-  /** 序列化快取的最大大小 */
   cacheMaxSize?: number
-  /** 是否啟用嚴格模式（更嚴格的類型檢查） */
-  strictMode?: boolean
-  /** 是否啟用效能監控 */
+  enableAdaptiveSerialization?: boolean
+  
+  // 效能選項
   enableMetrics?: boolean
-  /** 是否啟用自動記憶體管理 */
   enableAutoCleanup?: boolean
-  /** 記憶體清理間隔（毫秒） */
   cleanupInterval?: number
+  
+  // 快取選項
+  enableTieredCache?: boolean
+  l1CacheSize?: number
+  l2CacheSize?: number
+  promoteThreshold?: number
+  
+  // 錯誤恢復選項
+  enableErrorRecovery?: boolean
+  maxRetries?: number
+  fallbackMode?: boolean
+  
+  // 外掛選項
+  enablePlugins?: boolean
+  pluginTimeout?: number
+  
+  // 診斷選項
+  enableDiagnostics?: boolean
+  trackPerformance?: boolean
+  
+  // 非同步選項
+  enableAsync?: boolean
+  batchSize?: number
+  maxConcurrency?: number
 }
 ```
 
@@ -232,12 +270,12 @@ interface TurboMapOptions {
 #### 標準 Map 方法
 
 ```typescript
-interface TurboMapLike<K, V> {
+interface EnhancedTurboMapLike<K, V> {
   /** 映射中鍵值對的數量 */
   readonly size: number
   
   /** 設定鍵值對，支援鏈式呼叫 */
-  set(key: K, value: V): TurboMapLike<K, V>
+  set(key: K, value: V): EnhancedTurboMapLike<K, V>
   
   /** 取得指定鍵的值 */
   get(key: K): V | undefined
@@ -261,45 +299,93 @@ interface TurboMapLike<K, V> {
   entries(): IterableIterator<[K, V]>
   
   /** 遍歷所有鍵值對 */
-  forEach(callback: (value: V, key: K, map: TurboMapLike<K, V>) => void): void
+  forEach(callback: (value: V, key: K, map: EnhancedTurboMapLike<K, V>) => void): void
 }
 ```
 
-#### 🚀 TurboMap 專屬方法
+#### 🚀 增強方法
 
 ```typescript
-interface TurboMapLike<K, V> {
-  /** 批次設定鍵值對 */
-  setAll(entries: [K, V][]): TurboMapLike<K, V>
-  
-  /** 批次取得 */
+interface EnhancedTurboMapLike<K, V> {
+  // 批次操作
+  setAll(entries: [K, V][]): EnhancedTurboMapLike<K, V>
   getAll(keys: K[]): (V | undefined)[]
+  deleteAll(keys: K[]): boolean[]
   
-  /** 條件查詢 */
+  // 進階查詢
   findByValue(predicate: (value: V, key: K) => boolean): [K, V] | undefined
+  filter(predicate: (value: V, key: K) => boolean): [K, V][]
+  mapValues<U>(transform: (value: V, key: K) => U): EnhancedTurboMapLike<K, U>
   
-  /** 取得效能指標 */
-  getMetrics(): PerformanceMetrics
+  // 統計和診斷
+  getMetrics(): {
+    size: number
+    operationCount: number
+    cacheHits: number
+    cacheMisses: number
+    cacheHitRate: number
+    errorCount: number
+    errorRate: number
+    pluginStats?: unknown
+    cacheStats?: unknown
+    serializerStats?: unknown
+  }
   
-  /** 取得除錯資訊 */
-  debug(): DebugInfo
+  debug(): {
+    size: number
+    internalMapSize: number
+    keyMapSize: number
+    config: unknown
+    health: unknown
+    diagnostics: unknown
+  }
   
-  /** 新增外掛 */
-  addPlugin(plugin: TurboMapPlugin<K, V>): void
+  getDiagnostics(): {
+    performanceProfile: PerformanceProfile
+    memoryUsage: MemoryDiagnostic
+    errorAnalysis: ErrorAnalysis
+    optimizationSuggestions: OptimizationSuggestion[]
+    healthScore: number
+    recommendations: string[]
+  } | null
   
-  /** 移除外掛 */
-  removePlugin(pluginName: string): boolean
+  getHealthStatus(): {
+    healthy: boolean
+    errorRate: number
+    cacheHitRate: number
+    inFallbackMode: boolean
+    score: number
+  }
   
-  /** 手動觸發記憶體優化 */
-  optimizeMemory(): void
+  // 外掛管理
+  addPlugin(plugin: TurboMapPlugin<K, V>): Promise<boolean>
+  removePlugin(pluginName: string): Promise<boolean>
+  enablePlugin(pluginName: string): Promise<boolean>
+  disablePlugin(pluginName: string): Promise<boolean>
+  getPluginStats(): {
+    totalPlugins: number
+    enabledPlugins: number
+    totalExecutions: number
+    totalErrors: number
+    errorRate: number
+  } | null
   
-  /** 估算記憶體使用量 */
-  estimateMemoryUsage(): number
+  // 非同步操作
+  toAsync(): AsyncTurboMapLike<K, V>
   
-  /** 分析鍵分佈 */
-  analyzeKeyDistribution(keys: string[]): Record<string, number>
+  // 效能優化
+  optimize(): void
+  reset(): void
   
-  /** 取得鍵的序列化字串（除錯用） */
+  // 序列化
+  serialize(): string
+  clone(): EnhancedTurboMapLike<K, V>
+  
+  // 記憶體管理
+  cleanup(): void
+  compact(): void
+  
+  // 除錯工具
   getSerializedKey(key: K): string
 }
 ```

@@ -59,13 +59,13 @@
     "release:patch": "node scripts/release.js patch",
     "release:minor": "node scripts/release.js minor",
     "release:major": "node scripts/release.js major",
-    "test:ci-config": "node scripts/test-ci.js",
-    "config:show": "node scripts/config-manager.js show",
-    "config:secrets": "node scripts/config-manager.js secrets",
-    "config:validate": "node scripts/config-manager.js validate",
-    "config:generate-env": "node scripts/config-manager.js generate-env",
     "ci:status": "node scripts/ci-status.js",
-    "ci:check": "npm run ci:status"
+    "ci:test": "node scripts/test-ci.js",
+    "config:validate": "node scripts/config-manager.js validate",
+    "config:show": "node scripts/config-manager.js show",
+    "config:generate-env": "node scripts/config-manager.js generate-env",
+    "security:check": "node scripts/security-check.js",
+    "setup:github-pages": "node scripts/setup-github-pages.js"
   },
   "repository": {
     "type": "git",

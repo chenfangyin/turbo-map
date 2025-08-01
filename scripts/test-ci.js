@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('🧪 Testing CI/CD Configuration...\n');
+console.log('🧪 测试 CI/CD 配置...\n');
 
 function runTest(name, command) {
   try {
@@ -33,15 +33,15 @@ function checkFileExists(filePath, description) {
 }
 
 // Check required files
-console.log('📁 Checking required files...');
+console.log('📁 检查必需文件...');
 const requiredFiles = [
-  ['.github/workflows/ci.yml', 'CI/CD Workflow'],
-  ['.github/workflows/release.yml', 'Release Workflow'],
-  ['.github/workflows/version.yml', 'Version Management Workflow'],
-  ['.github/workflows/deploy-docs.yml', 'Documentation Deployment Workflow'],
-  ['.github/dependabot.yml', 'Dependabot Configuration'],
-  ['scripts/release.js', 'Release Script'],
-  ['package.json', 'Package Configuration']
+  ['.github/workflows/ci.yml', 'CI/CD 工作流'],
+  ['.github/workflows/release.yml', '发布工作流'],
+  ['.github/workflows/version.yml', '版本管理工作流'],
+  ['.github/workflows/deploy-docs.yml', '文档部署工作流'],
+  ['.github/dependabot.yml', 'Dependabot 配置'],
+  ['scripts/release.js', '发布脚本'],
+  ['package.json', '包配置']
 ];
 
 let allFilesExist = true;
@@ -54,17 +54,17 @@ for (const [filePath, description] of requiredFiles) {
 console.log('');
 
 if (!allFilesExist) {
-  console.error('❌ Some required files are missing. Please check the configuration.');
+  console.error('❌ 缺少一些必需文件。请检查配置。');
   process.exit(1);
 }
 
 // Run tests
-console.log('🔧 Running tests...');
+console.log('🔧 运行测试...');
 const tests = [
-  ['Linting', 'npm run lint'],
-  ['Type Checking', 'npm run type-check'],
-  ['Tests', 'npm run test:ci'],
-  ['Build', 'npm run build']
+  ['代码检查', 'npm run lint'],
+  ['类型检查', 'npm run type-check'],
+  ['单元测试', 'npm run test:ci'],
+  ['构建测试', 'npm run build']
 ];
 
 let allTestsPassed = true;
@@ -75,7 +75,7 @@ for (const [name, command] of tests) {
 }
 
 // Check build output
-console.log('📦 Checking build output...');
+console.log('📦 检查构建输出...');
 const buildFiles = [
   'dist/index.js',
   'dist/index.esm.js',
@@ -86,7 +86,7 @@ const buildFiles = [
 
 let allBuildFilesExist = true;
 for (const file of buildFiles) {
-  if (!checkFileExists(file, `Build file: ${file}`)) {
+  if (!checkFileExists(file, `构建文件: ${file}`)) {
     allBuildFilesExist = false;
   }
 }
@@ -94,18 +94,18 @@ for (const file of buildFiles) {
 console.log('');
 
 // Summary
-console.log('📊 Test Summary:');
-console.log(`Files: ${allFilesExist ? '✅ All present' : '❌ Missing files'}`);
-console.log(`Tests: ${allTestsPassed ? '✅ All passed' : '❌ Some failed'}`);
-console.log(`Build: ${allBuildFilesExist ? '✅ All files generated' : '❌ Missing build files'}`);
+console.log('📊 测试总结:');
+console.log(`文件: ${allFilesExist ? '✅ 全部存在' : '❌ 缺少文件'}`);
+console.log(`测试: ${allTestsPassed ? '✅ 全部通过' : '❌ 部分失败'}`);
+console.log(`构建: ${allBuildFilesExist ? '✅ 所有文件已生成' : '❌ 缺少构建文件'}`);
 
 if (allFilesExist && allTestsPassed && allBuildFilesExist) {
-  console.log('\n🎉 CI/CD configuration is ready!');
-  console.log('\nNext steps:');
-  console.log('1. Configure NPM_TOKEN in GitHub secrets');
-  console.log('2. Enable GitHub Pages');
-  console.log('3. Push to main branch to test workflows');
+  console.log('\n🎉 CI/CD 配置已就绪！');
+  console.log('\n下一步操作:');
+  console.log('1. 在 GitHub secrets 中配置 NPM_TOKEN');
+  console.log('2. 启用 GitHub Pages');
+  console.log('3. 推送到 main 分支以测试工作流');
 } else {
-  console.log('\n❌ Configuration needs attention before deployment.');
+  console.log('\n❌ 部署前需要关注配置。');
   process.exit(1);
 } 

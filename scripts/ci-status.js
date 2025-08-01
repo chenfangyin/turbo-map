@@ -37,7 +37,7 @@ function checkFileExists(filePath) {
 
 function validateWorkflowFile(filePath) {
   if (!checkFileExists(filePath)) {
-    return { exists: false, valid: false, error: 'File not found' };
+    return { exists: false, valid: false, error: '文件未找到' };
   }
 
   try {
@@ -92,11 +92,11 @@ function checkPackageScripts() {
 
 function checkSecrets() {
   const requiredSecrets = [
-    'NPM_TOKEN',
-    'GITHUB_TOKEN'
+    'NPM_TOKEN'
   ];
   
   const optionalSecrets = [
+    'GITHUB_TOKEN',
     'SLACK_WEBHOOK_URL',
     'DISCORD_WEBHOOK_URL',
     'NPM_REGISTRY',
@@ -110,11 +110,11 @@ function checkSecrets() {
 }
 
 function generateReport() {
-  log('\n🔧 CI/CD Configuration Status Report', 'bright');
+  log('\n🔧 CI/CD 配置状态报告', 'bright');
   log('=====================================\n', 'bright');
   
   // Check workflow files
-  log('📋 Workflow Files:', 'cyan');
+  log('📋 工作流文件:', 'cyan');
   const workflows = [
     '.github/workflows/ci.yml',
     '.github/workflows/release.yml',
@@ -127,34 +127,34 @@ function generateReport() {
     const result = validateWorkflowFile(workflow);
     if (result.exists && result.valid) {
       log(`  ✅ ${workflow} - ${result.name}`, 'green');
-      log(`     Jobs: ${result.jobs.join(', ')}`, 'blue');
+      log(`     任务: ${result.jobs.join(', ')}`, 'blue');
     } else if (result.exists) {
-      log(`  ❌ ${workflow} - Invalid YAML`, 'red');
-      log(`     Error: ${result.error}`, 'red');
+      log(`  ❌ ${workflow} - YAML 格式无效`, 'red');
+      log(`     错误: ${result.error}`, 'red');
     } else {
-      log(`  ❌ ${workflow} - Not found`, 'red');
+      log(`  ❌ ${workflow} - 未找到`, 'red');
     }
   });
   
   // Check package.json scripts
-  log('\n📦 Package.json Scripts:', 'cyan');
+  log('\n📦 Package.json 脚本:', 'cyan');
   const scriptsResult = checkPackageScripts();
   if (scriptsResult.valid) {
-    log('  ✅ All required scripts present', 'green');
-    log(`     Found: ${scriptsResult.present.join(', ')}`, 'blue');
+    log('  ✅ 所有必需脚本已存在', 'green');
+    log(`     找到: ${scriptsResult.present.join(', ')}`, 'blue');
   } else {
-    log('  ❌ Missing required scripts', 'red');
-    log(`     Missing: ${scriptsResult.missing.join(', ')}`, 'red');
+    log('  ❌ 缺少必需脚本', 'red');
+    log(`     缺少: ${scriptsResult.missing.join(', ')}`, 'red');
   }
   
   // Check secrets configuration
-  log('\n🔐 Required Secrets:', 'cyan');
+  log('\n🔐 必需密钥:', 'cyan');
   const secrets = checkSecrets();
-  log(`  Required: ${secrets.required.join(', ')}`, 'yellow');
-  log(`  Optional: ${secrets.optional.join(', ')}`, 'blue');
+  log(`  必需: ${secrets.required.join(', ')}`, 'yellow');
+  log(`  可选: ${secrets.optional.join(', ')}`, 'blue');
   
   // Check additional files
-  log('\n📁 Additional Files:', 'cyan');
+  log('\n📁 附加文件:', 'cyan');
   const additionalFiles = [
     '.github/dependabot.yml',
     'config/ci-config.json',
@@ -165,39 +165,39 @@ function generateReport() {
     if (checkFileExists(file)) {
       log(`  ✅ ${file}`, 'green');
     } else {
-      log(`  ❌ ${file} - Not found`, 'red');
+      log(`  ❌ ${file} - 未找到`, 'red');
     }
   });
   
   // Summary
-  log('\n📊 Summary:', 'bright');
+  log('\n📊 总结:', 'bright');
   const workflowResults = workflows.map(w => validateWorkflowFile(w));
   const validWorkflows = workflowResults.filter(r => r.exists && r.valid).length;
   const totalWorkflows = workflows.length;
   
-  log(`  Workflows: ${validWorkflows}/${totalWorkflows} valid`, 
+  log(`  工作流: ${validWorkflows}/${totalWorkflows} 有效`, 
       validWorkflows === totalWorkflows ? 'green' : 'yellow');
-  log(`  Scripts: ${scriptsResult.valid ? 'All present' : 'Missing some'}`, 
+  log(`  脚本: ${scriptsResult.valid ? '全部存在' : '缺少部分'}`, 
       scriptsResult.valid ? 'green' : 'red');
   
   if (validWorkflows === totalWorkflows && scriptsResult.valid) {
-    log('\n🎉 CI/CD configuration is ready!', 'green');
+    log('\n🎉 CI/CD 配置已就绪！', 'green');
   } else {
-    log('\n⚠️  Some issues need to be addressed', 'yellow');
+    log('\n⚠️  需要解决一些问题', 'yellow');
   }
   
-  log('\n📝 Next Steps:', 'bright');
-  log('  1. Set up required GitHub Secrets', 'blue');
-  log('  2. Configure notification webhooks (optional)', 'blue');
-  log('  3. Test workflows with a test commit', 'blue');
-  log('  4. Monitor workflow execution', 'blue');
+  log('\n📝 下一步操作:', 'bright');
+  log('  1. 设置必需的 GitHub Secrets', 'blue');
+  log('  2. 配置通知 webhook（可选）', 'blue');
+  log('  3. 通过测试提交测试工作流', 'blue');
+  log('  4. 监控工作流执行', 'blue');
 }
 
 // Run the check
 try {
   generateReport();
 } catch (error) {
-  log(`\n❌ Error running CI/CD status check: ${error.message}`, 'red');
+  log(`\n❌ 运行 CI/CD 状态检查时出错: ${error.message}`, 'red');
   process.exit(1);
 }
 

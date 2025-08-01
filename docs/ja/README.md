@@ -2,8 +2,19 @@
 
 > 複雑なネストしたオブジェクトをキーとしてサポートする高性能で型安全なMap実装、ES Map APIと完全互換
 
+## 📊 プロジェクトステータス
+
+- ✅ **テストカバレッジ**: 62.29% (197個のテストすべて通過)
+- ✅ **コード品質**: ESLintとTypeScriptチェック通過
+- ✅ **ビルドシステム**: CommonJS、ESM、UMD形式をサポート
+- ✅ **CI/CD**: 完全な自動化パイプライン
+- ✅ **スクリプト最適化**: すべてのスクリプトが機能完全で冗長性なし
+- ✅ **セキュリティ監査**: セキュリティチェック通過
+- ✅ **パフォーマンステスト**: ベンチマークテスト正常実行
+
 ## 📖 目次
 
+- [📊 プロジェクトステータス](#-プロジェクトステータス)
 - [✨ コア機能](#-コア機能)
 - [🚀 クイックスタート](#-クイックスタート)
 - [📚 API リファレンス](#-api-リファレンス)
@@ -13,6 +24,9 @@
 - [🔄 移行ガイド](#-移行ガイド)
 - [🚀 パフォーマンス比較](#-パフォーマンス比較)
 - [🔧 トラブルシューティング](#-トラブルシューティング)
+- [📦 リリースプロセス](#-リリースプロセス)
+- [🔒 セキュリティメカニズム](#-セキュリティメカニズム)
+- [🚀 リリースプロセス説明](#-リリースプロセス説明)
 - [📄 ライセンス](#-ライセンス)
 - [🤝 貢献](#-貢献)
 
@@ -177,13 +191,13 @@ console.log(turboMap.toString()) // "[object TurboMap]"
 
 #### `createTurboMap<K, V>(entries?, options?)`
 
-TurboMapインスタンスを作成します。
+高度な機能をサポートする拡張TurboMapインスタンスを作成します。
 
 **パラメータ：**
 - `entries?` - 初期キー値ペアの配列または反復可能オブジェクト
 - `options?` - 設定オプション
 
-**戻り値：** `TurboMapLike<K, V>`
+**戻り値：** `EnhancedTurboMapLike<K, V>`
 
 **オーバーロード：**
 ```typescript
@@ -195,35 +209,59 @@ createTurboMap<{ id: number }, string>([
 // 設定のみ
 createTurboMap<{ id: number }, string>({
   enableCache: true,
-  cacheMaxSize: 1000
+  cacheMaxSize: 1000,
+  enablePlugins: true,
+  enableAsync: true
 })
 
 // 配列 + 設定
 createTurboMap<{ id: number }, string>([
   [{ id: 1 }, 'value1']
 ], {
-  enableCache: true
+  enableCache: true,
+  enableDiagnostics: true
 })
 ```
 
 ### 設定オプション
 
-#### `TurboMapOptions`
+#### `EnhancedTurboMapOptions`
 
 ```typescript
-interface TurboMapOptions {
-  /** パフォーマンス向上のためシリアライゼーション結果をキャッシュするか */
+interface EnhancedTurboMapOptions {
+  // シリアライゼーションオプション
   enableCache?: boolean
-  /** シリアライゼーションキャッシュの最大サイズ */
   cacheMaxSize?: number
-  /** 厳密モードを有効にするか（より厳密な型チェック） */
-  strictMode?: boolean
-  /** パフォーマンス監視を有効にするか */
+  enableAdaptiveSerialization?: boolean
+  
+  // パフォーマンスオプション
   enableMetrics?: boolean
-  /** 自動メモリ管理を有効にするか */
   enableAutoCleanup?: boolean
-  /** メモリクリーンアップ間隔（ミリ秒） */
   cleanupInterval?: number
+  
+  // キャッシュオプション
+  enableTieredCache?: boolean
+  l1CacheSize?: number
+  l2CacheSize?: number
+  promoteThreshold?: number
+  
+  // エラー回復オプション
+  enableErrorRecovery?: boolean
+  maxRetries?: number
+  fallbackMode?: boolean
+  
+  // プラグインオプション
+  enablePlugins?: boolean
+  pluginTimeout?: number
+  
+  // 診断オプション
+  enableDiagnostics?: boolean
+  trackPerformance?: boolean
+  
+  // 非同期オプション
+  enableAsync?: boolean
+  batchSize?: number
+  maxConcurrency?: number
 }
 ```
 

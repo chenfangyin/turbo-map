@@ -38,7 +38,20 @@ jobs:
         run: |
           mkdir -p docs-site
           cp -r docs/* docs-site/ 2>/dev/null || true
-          cp README.md docs-site/
+          
+          # 使用软链接而不是复制文件
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            # Windows: 复制文件（Windows 软链接可能有问题）
+            cp README.md docs-site/
+            cp LICENSE docs-site/ 2>/dev/null || true
+            cp CHANGELOG.md docs-site/ 2>/dev/null || true
+          else
+            # Unix/Linux/macOS: 使用软链接
+            ln -sf ../README.md docs-site/README.md
+            ln -sf ../LICENSE docs-site/LICENSE 2>/dev/null || true
+            ln -sf ../CHANGELOG.md docs-site/CHANGELOG.md 2>/dev/null || true
+          fi
+          
           cp dist/* docs-site/
 
           # Create API documentation

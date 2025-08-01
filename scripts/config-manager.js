@@ -82,6 +82,33 @@ class ConfigManager {
       missing.forEach(secret => {
         console.error(`   - ${secret}`);
       });
+      
+      console.error('');
+      console.error('🔧 解决方案:');
+      console.error('  1. 设置环境变量:');
+      console.error('     export NPM_TOKEN=your_token');
+      console.error('     set NPM_TOKEN=your_token (Windows)');
+      console.error('');
+      console.error('  2. 在运行时传参:');
+      console.error('     NPM_TOKEN=your_token npm run release');
+      console.error('     npm run release -- NPM_TOKEN=your_token');
+      console.error('');
+      console.error('  3. 在 .env 文件中设置:');
+      console.error('     cp env.example .env');
+      console.error('     # 编辑 .env 文件，设置真实的 NPM_TOKEN');
+      console.error('');
+      console.error('  4. 在 CI/CD 中通过 secrets 设置');
+      console.error('');
+      console.error('📝 获取 NPM_TOKEN:');
+      console.error('  - 登录 npm: npm login');
+      console.error('  - 查看 token: npm token list');
+      console.error('  - 创建 token: npm token create');
+      console.error('');
+      console.error('🔒 安全注意事项:');
+      console.error('  - 不要将真实的 NPM_TOKEN 提交到版本控制');
+      console.error('  - 使用 .env 文件时确保已添加到 .gitignore');
+      console.error('  - 在 CI/CD 中使用环境变量或 secrets');
+      
       return false;
     }
     
@@ -94,7 +121,8 @@ class ConfigManager {
       const envFile = path.join(__dirname, '..', '.env');
       
       if (!fs.existsSync(envFile)) {
-        fs.writeFileSync(envFile, envContent);
+        // 使用 UTF-8 编码写入文件，解决中文显示问题
+        fs.writeFileSync(envFile, envContent, { encoding: 'utf8' });
         console.log('✅ 已生成 .env 文件');
       } else {
         console.log('ℹ️  .env 文件已存在');
