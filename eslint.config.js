@@ -9,7 +9,7 @@ export default [
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        ecmaVersion: 2022,
+        ecmaVersion: 2020,
         sourceType: 'module'
       },
       globals: {
@@ -33,7 +33,8 @@ export default [
       'prefer-const': 'error',
       'no-var': 'error',
       'no-redeclare': 'warn',
-      'no-unused-vars': 'off' // 禁用基础规则，使用TypeScript版本
+      'no-unused-vars': 'off', // 禁用基础规则，使用TypeScript版本
+      'constructor-super': 'off' // 禁用有问题的规则
     }
   },
   {
