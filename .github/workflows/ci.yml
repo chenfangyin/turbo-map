@@ -147,9 +147,6 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Run benchmarks
-        run: npm run benchmark
-
       - name: Notify on failure (Slack)
         if: failure()
         uses: 8398a7/action-slack@v3
