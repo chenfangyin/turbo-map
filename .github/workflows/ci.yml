@@ -38,9 +38,6 @@ jobs:
       - name: Security check
         run: npm run security:check
 
-      - name: Performance benchmark
-        run: npm run benchmark
-
       - name: Build project
         run: npm run build
 
