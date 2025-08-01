@@ -42,6 +42,20 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Check NPM Token
+        run: |
+          echo "🔍 检查 NPM_TOKEN 配置..."
+          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
+            echo "❌ NPM_TOKEN 未设置"
+            echo "🔧 请在 GitHub 仓库设置中添加 NPM_TOKEN:"
+            echo "   Settings > Secrets and variables > Actions > New repository secret"
+            echo "   Name: NPM_TOKEN"
+            echo "   Value: 你的 npm token"
+            exit 1
+          else
+            echo "✅ NPM_TOKEN 已设置"
+          fi
+
       - name: Publish to npm
         run: |
           echo "🔍 检查发布前状态..."
