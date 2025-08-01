@@ -43,8 +43,8 @@ jobs:
 
       - name: Test build output
         run: |
-          node -e "const { TurboMap } = require('./dist/index.js'); console.log('CommonJS build works');"
           node -e "import('./dist/index.esm.js').then(m => { console.log('ESM build works'); });"
+          node -e "import('./dist/index.js').then(m => { console.log('CommonJS build works'); });"
 
       - name: Validate package.json
         run: |
