@@ -32,22 +32,69 @@ jobs:
         run: npm run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v3
 
       - name: Create documentation site
         run: |
+          # Create docs-site directory
           mkdir -p docs-site
-          cp -r docs/* docs-site/ 2>/dev/null || true
-          cp README.md docs-site/
-          cp LICENSE docs-site/ 2>/dev/null || true
-          cp CHANGELOG.md docs-site/ 2>/dev/null || true
-          cp -r dist/* docs-site/
+          
+          # Copy main documentation files
+          cp README.md docs-site/index.md
+          cp CHANGELOG.md docs-site/ 2>/dev/null || echo "CHANGELOG.md not found, skipping..."
+          cp LICENSE docs-site/ 2>/dev/null || echo "LICENSE not found, skipping..."
+          
+          # Copy docs directory if exists
+          if [ -d "docs" ]; then
+            cp -r docs/* docs-site/
+          fi
+          
+          # Copy built files
+          if [ -d "dist" ]; then
+            mkdir -p docs-site/dist
+            cp -r dist/* docs-site/dist/
+          fi
+          
+          # Create simple index.html if not exists
+          if [ ! -f "docs-site/index.html" ]; then
+            cat > docs-site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>TurboMap - Documentation</title>
+              <style>
+                  body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+                  h1 { color: #333; }
+                  .nav { margin: 20px 0; }
+                  .nav a { margin-right: 15px; color: #007bff; text-decoration: none; }
+                  .nav a:hover { text-decoration: underline; }
+              </style>
+          </head>
+          <body>
+              <h1>🚀 TurboMap Documentation</h1>
+              <div class="nav">
+                  <a href="index.md">README</a>
+                  <a href="CHANGELOG.md">Changelog</a>
+                  <a href="dist/">Build Files</a>
+              </div>
+              <p>High-performance, type-safe Map implementation supporting complex nested objects as keys.</p>
+              <h2>Quick Links</h2>
+              <ul>
+                  <li><a href="https://www.npmjs.com/package/turbo-map">npm Package</a></li>
+                  <li><a href="https://github.com/chenfangyin/turbo-map">GitHub Repository</a></li>
+              </ul>
+          </body>
+          </html>
+          EOF
+          fi
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: "./docs-site"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v3
