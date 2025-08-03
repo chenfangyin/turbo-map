@@ -79,7 +79,7 @@
   "bugs": {
     "url": "https://github.com/chenfangyin/turbo-map/issues"
   },
-  "homepage": "https://chenfangyin.github.io/turbo-map",
+
   "author": "Ivan Chen <fangyin.chen@gmail.com>",
   "license": "MIT",
   "devDependencies": {
