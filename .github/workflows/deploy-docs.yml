@@ -32,7 +32,7 @@ jobs:
         run: npm run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v4
 
       - name: Create documentation site
         run: |
@@ -67,28 +67,28 @@ jobs:
           echo "" >> docs-site/api.md
           echo "### Methods" >> docs-site/api.md
           echo "" >> docs-site/api.md
-          echo "- `set(key: K, value: V): TurboMap<K, V>`" >> docs-site/api.md
-          echo "- `get(key: K): V | undefined`" >> docs-site/api.md
-          echo "- `has(key: K): boolean`" >> docs-site/api.md
-          echo "- `delete(key: K): boolean`" >> docs-site/api.md
-          echo "- `clear(): void`" >> docs-site/api.md
-          echo "- `forEach(callback: (value: V, key: K, map: TurboMap<K, V>) => void): void`" >> docs-site/api.md
+          echo "- \`set(key: K, value: V): TurboMap<K, V>\`" >> docs-site/api.md
+          echo "- \`get(key: K): V | undefined\`" >> docs-site/api.md
+          echo "- \`has(key: K): boolean\`" >> docs-site/api.md
+          echo "- \`delete(key: K): boolean\`" >> docs-site/api.md
+          echo "- \`clear(): void\`" >> docs-site/api.md
+          echo "- \`forEach(callback: (value: V, key: K, map: TurboMap<K, V>) => void): void\`" >> docs-site/api.md
           echo "" >> docs-site/api.md
           echo "### Iterators" >> docs-site/api.md
           echo "" >> docs-site/api.md
-          echo "- `keys(): IterableIterator<K>`" >> docs-site/api.md
-          echo "- `values(): IterableIterator<V>`" >> docs-site/api.md
-          echo "- `entries(): IterableIterator<[K, V]>`" >> docs-site/api.md
+          echo "- \`keys(): IterableIterator<K>\`" >> docs-site/api.md
+          echo "- \`values(): IterableIterator<V>\`" >> docs-site/api.md
+          echo "- \`entries(): IterableIterator<[K, V]>\`" >> docs-site/api.md
           echo "" >> docs-site/api.md
           echo "### Properties" >> docs-site/api.md
           echo "" >> docs-site/api.md
-          echo "- `size: number`" >> docs-site/api.md
+          echo "- \`size: number\`" >> docs-site/api.md
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "./docs-site"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
