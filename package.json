@@ -1,6 +1,6 @@
 {
   "name": "turbo-map",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "High-performance, type-safe Map implementation supporting complex nested objects as keys, fully compatible with ES Map API",
   "keywords": [
@@ -80,7 +80,6 @@
     "url": "https://github.com/chenfangyin/turbo-map/issues"
   },
   "homepage": "https://chenfangyin.github.io/turbo-map",
-
   "author": "Ivan Chen <fangyin.chen@gmail.com>",
   "license": "MIT",
   "devDependencies": {
