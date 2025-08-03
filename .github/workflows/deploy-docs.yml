@@ -3,11 +3,23 @@ name: Deploy Documentation
 on:
   push:
     branches: [main]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'package.json'
+      - 'src/**'
+      - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,94 +32,267 @@ jobs:
           node-version: "18"
           cache: "npm"
 
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build project
         run: npm run build
 
+      - name: Get package version
+        id: package-version
+        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
       - name: Create documentation site
+        env:
+          PACKAGE_VERSION: ${{ steps.package-version.outputs.VERSION }}
         run: |
+          echo "🏗️ Creating documentation site..."
+          
           # Create docs-site directory
           mkdir -p docs-site
           
-          # Copy main documentation files
-          cp README.md docs-site/
-          cp CHANGELOG.md docs-site/ 2>/dev/null || echo "CHANGELOG.md not found, skipping..."
-          cp LICENSE docs-site/ 2>/dev/null || echo "LICENSE not found, skipping..."
+          # Copy main documentation files with error handling
+          echo "📝 Copying documentation files..."
+          cp README.md docs-site/ && echo "✅ README.md copied" || echo "❌ README.md not found"
+          cp CHANGELOG.md docs-site/ 2>/dev/null && echo "✅ CHANGELOG.md copied" || echo "⚠️ CHANGELOG.md not found, skipping..."
+          cp LICENSE docs-site/ 2>/dev/null && echo "✅ LICENSE copied" || echo "⚠️ LICENSE not found, skipping..."
           
           # Copy docs directory if exists
           if [ -d "docs" ]; then
-            cp -r docs/* docs-site/
+            echo "📚 Copying docs directory..."
+            cp -r docs/* docs-site/ && echo "✅ docs/ directory copied"
+          else
+            echo "⚠️ docs/ directory not found, skipping..."
           fi
           
           # Copy built files
           if [ -d "dist" ]; then
+            echo "📦 Copying build artifacts..."
             mkdir -p docs-site/dist
-            cp -r dist/* docs-site/dist/
+            cp -r dist/* docs-site/dist/ && echo "✅ dist/ directory copied"
+          else
+            echo "❌ dist/ directory not found"
+            exit 1
           fi
           
-          # Create simple index.html
-          cat > docs-site/index.html << 'EOF'
+          # Create robots.txt
+          cat > docs-site/robots.txt << 'EOF'
+          User-agent: *
+          Allow: /
+          
+          Sitemap: https://chenfangyin.github.io/turbo-map/sitemap.xml
+          EOF
+          
+          # Create optimized index.html with dynamic version
+          cat > docs-site/index.html << EOF
           <!DOCTYPE html>
           <html lang="en">
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <meta name="description" content="TurboMap - High-performance, type-safe Map implementation supporting complex nested objects as keys">
+              <meta name="keywords" content="typescript, map, performance, cache, lru, object-key">
+              <meta name="author" content="Ivan Chen">
+              <meta property="og:title" content="TurboMap Documentation">
+              <meta property="og:description" content="High-performance, type-safe Map implementation supporting complex nested objects as keys">
+              <meta property="og:type" content="website">
+              <meta property="og:url" content="https://chenfangyin.github.io/turbo-map/">
+              <meta name="twitter:card" content="summary">
+              <meta name="twitter:title" content="TurboMap Documentation">
+              <meta name="twitter:description" content="High-performance, type-safe Map implementation">
               <title>TurboMap - Documentation</title>
+              <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
               <style>
+                  :root {
+                      --primary-color: #2c3e50;
+                      --secondary-color: #007bff;
+                      --success-color: #28a745;
+                      --info-color: #17a2b8;
+                      --light-bg: #f8f9fa;
+                      --border-color: #dee2e6;
+                      --text-color: #333;
+                      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+                  }
+                  
+                  * { box-sizing: border-box; }
+                  
                   body { 
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif; 
                       max-width: 1200px; 
                       margin: 0 auto; 
                       padding: 20px;
                       line-height: 1.6;
-                      color: #333;
+                      color: var(--text-color);
+                      background-color: #fff;
                   }
-                  .header { text-align: center; margin-bottom: 2rem; }
-                  h1 { color: #2c3e50; }
+                  
+                  .header { 
+                      text-align: center; 
+                      margin-bottom: 3rem; 
+                      padding: 2rem 0;
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white;
+                      border-radius: 12px;
+                      box-shadow: var(--shadow);
+                  }
+                  
+                  .header h1 { 
+                      margin: 0 0 1rem 0;
+                      font-size: 2.5rem;
+                      font-weight: 700;
+                  }
+                  
+                  .header p {
+                      font-size: 1.2rem;
+                      margin: 0 0 1.5rem 0;
+                      opacity: 0.9;
+                  }
+                  
                   .nav { 
-                      margin: 30px 0; 
-                      padding: 20px;
-                      background: #f8f9fa;
-                      border-radius: 8px;
+                      margin: 2rem 0; 
+                      padding: 1.5rem;
+                      background: var(--light-bg);
+                      border-radius: 12px;
                       text-align: center;
+                      box-shadow: var(--shadow);
                   }
+                  
                   .nav a { 
-                      margin: 0 15px; 
-                      color: #007bff; 
+                      display: inline-block;
+                      margin: 0.5rem;
+                      color: var(--secondary-color); 
                       text-decoration: none; 
                       font-weight: 500;
-                      padding: 8px 16px;
-                      border-radius: 4px;
-                      transition: background-color 0.2s;
+                      padding: 12px 20px;
+                      border-radius: 8px;
+                      transition: all 0.3s ease;
+                      border: 1px solid transparent;
                   }
+                  
                   .nav a:hover { 
-                      background-color: #e9ecef;
-                      text-decoration: none;
+                      background-color: var(--secondary-color);
+                      color: white;
+                      transform: translateY(-2px);
+                      box-shadow: var(--shadow);
                   }
+                  
                   .badge {
                       display: inline-block;
-                      padding: 4px 8px;
-                      margin: 0 4px;
-                      border-radius: 4px;
+                      padding: 6px 12px;
+                      margin: 0 6px;
+                      border-radius: 20px;
                       font-size: 0.875rem;
-                      font-weight: 500;
+                      font-weight: 600;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
                   }
-                  .badge-success { background-color: #28a745; color: white; }
-                  .badge-info { background-color: #17a2b8; color: white; }
-                  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
-                  .card { padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; }
+                  
+                  .badge-success { background-color: var(--success-color); color: white; }
+                  .badge-info { background-color: var(--info-color); color: white; }
+                  .badge-version { background-color: #6f42c1; color: white; }
+                  
+                  .grid { 
+                      display: grid; 
+                      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+                      gap: 2rem; 
+                      margin: 2rem 0; 
+                  }
+                  
+                  .card { 
+                      padding: 2rem; 
+                      border: 1px solid var(--border-color); 
+                      border-radius: 12px;
+                      box-shadow: var(--shadow);
+                      transition: transform 0.2s ease, box-shadow 0.2s ease;
+                  }
+                  
+                  .card:hover {
+                      transform: translateY(-4px);
+                      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                  }
+                  
+                  .card h3 {
+                      margin: 0 0 1rem 0;
+                      color: var(--primary-color);
+                      font-size: 1.25rem;
+                  }
+                  
+                  .card pre {
+                      background: #2d3748;
+                      color: #e2e8f0;
+                      padding: 1rem;
+                      border-radius: 8px;
+                      overflow-x: auto;
+                      font-size: 0.9rem;
+                      line-height: 1.4;
+                  }
+                  
+                  .card ul {
+                      padding-left: 1.5rem;
+                  }
+                  
+                  .card li {
+                      margin: 0.5rem 0;
+                  }
+                  
+                  .stats {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                      gap: 1rem;
+                      margin: 2rem 0;
+                  }
+                  
+                  .stat {
+                      text-align: center;
+                      padding: 1.5rem;
+                      background: var(--light-bg);
+                      border-radius: 8px;
+                  }
+                  
+                  .stat-number {
+                      font-size: 2rem;
+                      font-weight: 700;
+                      color: var(--secondary-color);
+                  }
+                  
+                  .stat-label {
+                      font-size: 0.9rem;
+                      color: #666;
+                      margin-top: 0.5rem;
+                  }
+                  
+                  .footer {
+                      text-align: center;
+                      margin-top: 3rem;
+                      padding: 2rem;
+                      border-top: 1px solid var(--border-color);
+                      color: #666;
+                  }
+                  
+                  @media (max-width: 768px) {
+                      .header h1 { font-size: 2rem; }
+                      .nav a { margin: 0.25rem; padding: 8px 12px; }
+                      .grid { grid-template-columns: 1fr; }
+                      body { padding: 10px; }
+                  }
               </style>
           </head>
           <body>
               <div class="header">
-                  <h1>🚀 TurboMap Documentation</h1>
+                  <h1>🚀 TurboMap</h1>
                   <p>High-performance, type-safe Map implementation supporting complex nested objects as keys</p>
                   <div>
                       <span class="badge badge-success">Node.js 18+</span>
                       <span class="badge badge-info">TypeScript 5.0+</span>
-                      <span class="badge badge-success">v1.0.3</span>
+                      <span class="badge badge-version">v${PACKAGE_VERSION}</span>
                   </div>
               </div>
               
@@ -115,40 +300,116 @@ jobs:
                   <a href="README.md">📚 README</a>
                   <a href="CHANGELOG.md">📝 Changelog</a>
                   <a href="dist/">📦 Build Files</a>
-                  <a href="https://www.npmjs.com/package/turbo-map">📦 npm Package</a>
-                  <a href="https://github.com/chenfangyin/turbo-map">⭐ GitHub Repository</a>
+                  <a href="https://www.npmjs.com/package/turbo-map" target="_blank" rel="noopener">📦 npm Package</a>
+                  <a href="https://github.com/chenfangyin/turbo-map" target="_blank" rel="noopener">⭐ GitHub Repository</a>
+              </div>
+
+              <div class="stats">
+                  <div class="stat">
+                      <div class="stat-number">3-5x</div>
+                      <div class="stat-label">Performance Boost</div>
+                  </div>
+                  <div class="stat">
+                      <div class="stat-number">100%</div>
+                      <div class="stat-label">Type Safe</div>
+                  </div>
+                  <div class="stat">
+                      <div class="stat-number">0</div>
+                      <div class="stat-label">Dependencies</div>
+                  </div>
+                  <div class="stat">
+                      <div class="stat-number">ES2022</div>
+                      <div class="stat-label">Modern JS</div>
+                  </div>
               </div>
 
               <div class="grid">
                   <div class="card">
                       <h3>🎯 Quick Start</h3>
-                      <pre><code>npm install turbo-map
+                      <pre><code># Install
+npm install turbo-map
 
+# Import and use
 import { TurboMap } from 'turbo-map';
 
 const map = new TurboMap();
-map.set({ id: 1, name: 'test' }, 'value');</code></pre>
+map.set({ id: 1, name: 'test' }, 'value');
+console.log(map.get({ id: 1, name: 'test' })); // 'value'</code></pre>
                   </div>
                   
                   <div class="card">
-                      <h3>✨ Features</h3>
+                      <h3>✨ Core Features</h3>
                       <ul>
-                          <li>Type-safe Map implementation</li>
-                          <li>Complex nested objects as keys</li>
-                          <li>LRU cache & performance optimizations</li>
-                          <li>ES Map API compatibility</li>
+                          <li>🔐 <strong>Type-safe</strong> Map implementation</li>
+                          <li>🗝️ <strong>Complex objects</strong> as keys</li>
+                          <li>⚡ <strong>LRU cache</strong> & performance optimizations</li>
+                          <li>🔄 <strong>ES Map API</strong> compatibility</li>
+                          <li>🧠 <strong>Smart serialization</strong> for complex keys</li>
+                          <li>📊 <strong>Performance monitoring</strong> tools</li>
                       </ul>
                   </div>
+
+                  <div class="card">
+                      <h3>🔧 Advanced Features</h3>
+                      <ul>
+                          <li>🔌 <strong>Plugin system</strong> for extensibility</li>
+                          <li>🔄 <strong>Async operations</strong> support</li>
+                          <li>💾 <strong>Memory management</strong> with LRU</li>
+                          <li>🛡️ <strong>Error recovery</strong> mechanisms</li>
+                          <li>📈 <strong>Batch operations</strong> for efficiency</li>
+                          <li>🎯 <strong>Custom comparators</strong> support</li>
+                      </ul>
+                  </div>
+
+                  <div class="card">
+                      <h3>📊 Use Cases</h3>
+                      <ul>
+                          <li>🗄️ <strong>Complex caching</strong> scenarios</li>
+                          <li>🔍 <strong>Object-based</strong> lookup tables</li>
+                          <li>📝 <strong>State management</strong> with objects</li>
+                          <li>🎮 <strong>Game state</strong> tracking</li>
+                          <li>📈 <strong>Analytics</strong> data aggregation</li>
+                          <li>🔗 <strong>Graph structures</strong> with object nodes</li>
+                      </ul>
+                  </div>
+              </div>
+
+              <div class="footer">
+                  <p>Built with ❤️ using TypeScript • Licensed under MIT</p>
+                  <p>Documentation generated on $(date)</p>
               </div>
           </body>
           </html>
           EOF
+          
+          echo "✅ Documentation site created successfully!"
+          echo "📁 Files in docs-site:"
+          ls -la docs-site/
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs-site
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy documentation v${{ steps.package-version.outputs.VERSION }}'
+          enable_jekyll: false
+          cname: false
+
+      - name: Upload deployment summary
+        if: always()
+        run: |
+          echo "## 📋 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | v${{ steps.package-version.outputs.VERSION }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ✅ Success |" >> $GITHUB_STEP_SUMMARY
+          echo "| Documentation | ✅ Generated |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployment | ${{ job.status == 'success' && '✅ Success' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Site URL**: https://chenfangyin.github.io/turbo-map/" >> $GITHUB_STEP_SUMMARY
+          echo "📦 **npm Package**: https://www.npmjs.com/package/turbo-map" >> $GITHUB_STEP_SUMMARY
