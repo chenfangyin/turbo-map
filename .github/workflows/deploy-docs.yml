@@ -38,51 +38,10 @@ jobs:
         run: |
           mkdir -p docs-site
           cp -r docs/* docs-site/ 2>/dev/null || true
-          
-          # 使用软链接而不是复制文件
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            # Windows: 复制文件（Windows 软链接可能有问题）
-            cp README.md docs-site/
-            cp LICENSE docs-site/ 2>/dev/null || true
-            cp CHANGELOG.md docs-site/ 2>/dev/null || true
-          else
-            # Unix/Linux/macOS: 使用软链接
-            ln -sf ../README.md docs-site/README.md
-            ln -sf ../LICENSE docs-site/LICENSE 2>/dev/null || true
-            ln -sf ../CHANGELOG.md docs-site/CHANGELOG.md 2>/dev/null || true
-          fi
-          
+          cp README.md docs-site/
+          cp LICENSE docs-site/ 2>/dev/null || true
+          cp CHANGELOG.md docs-site/ 2>/dev/null || true
           cp -r dist/* docs-site/
-
-          # Create API documentation
-          echo "# API Documentation" > docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "## TurboMap Class" >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "### Constructor" >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo '```typescript' >> docs-site/api.md
-          echo "new TurboMap<K, V>(options?: TurboMapOptions)" >> docs-site/api.md
-          echo '```' >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "### Methods" >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "- \`set(key: K, value: V): TurboMap<K, V>\`" >> docs-site/api.md
-          echo "- \`get(key: K): V | undefined\`" >> docs-site/api.md
-          echo "- \`has(key: K): boolean\`" >> docs-site/api.md
-          echo "- \`delete(key: K): boolean\`" >> docs-site/api.md
-          echo "- \`clear(): void\`" >> docs-site/api.md
-          echo "- \`forEach(callback: (value: V, key: K, map: TurboMap<K, V>) => void): void\`" >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "### Iterators" >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "- \`keys(): IterableIterator<K>\`" >> docs-site/api.md
-          echo "- \`values(): IterableIterator<V>\`" >> docs-site/api.md
-          echo "- \`entries(): IterableIterator<[K, V]>\`" >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "### Properties" >> docs-site/api.md
-          echo "" >> docs-site/api.md
-          echo "- \`size: number\`" >> docs-site/api.md
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
