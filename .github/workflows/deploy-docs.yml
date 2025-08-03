@@ -3,13 +3,6 @@ name: Deploy Documentation
 on:
   push:
     branches: [main]
-    paths:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - 'package.json'
-      - 'src/**'
-      - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
 jobs:
@@ -23,8 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,112 +29,56 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Get package version
-        id: package-version
-        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
       - name: Create documentation site
         run: |
-          echo "Creating documentation site..."
-          
-          # Create docs-site directory
           mkdir -p docs-site
-          
-          # Copy main files
-          cp README.md docs-site/ || echo "README.md not found"
-          cp CHANGELOG.md docs-site/ 2>/dev/null || echo "CHANGELOG.md not found"
-          cp LICENSE docs-site/ 2>/dev/null || echo "LICENSE not found"
-          
-          # Copy docs directory if exists
+          cp README.md docs-site/
+          cp CHANGELOG.md docs-site/ 2>/dev/null || true
+          cp LICENSE docs-site/ 2>/dev/null || true
           if [ -d "docs" ]; then
             cp -r docs/* docs-site/
           fi
-          
-          # Copy built files
           if [ -d "dist" ]; then
             mkdir -p docs-site/dist
             cp -r dist/* docs-site/dist/
           fi
 
-      - name: Create HTML index
-        env:
-          PACKAGE_VERSION: ${{ steps.package-version.outputs.VERSION }}
+      - name: Create simple index
         run: |
-          # Create a simple index.html
-          cat > docs-site/index.html << 'HTML_END'
+          cat > docs-site/index.html << 'EOF'
           <!DOCTYPE html>
-          <html lang="en">
+          <html>
           <head>
+              <title>TurboMap Documentation</title>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>TurboMap Documentation</title>
               <style>
-                  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-                  .header { text-align: center; background: #f8f9fa; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; }
-                  .nav { text-align: center; margin: 2rem 0; }
-                  .nav a { margin: 0 1rem; color: #007bff; text-decoration: none; }
-                  .nav a:hover { text-decoration: underline; }
-                  .badge { background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.875rem; margin: 0 4px; }
+                  body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+                  .header { text-align: center; background: #f5f5f5; padding: 20px; margin-bottom: 20px; }
+                  .nav a { margin: 0 10px; color: #007bff; }
               </style>
           </head>
           <body>
               <div class="header">
-                  <h1>🚀 TurboMap</h1>
+                  <h1>TurboMap Documentation</h1>
                   <p>High-performance, type-safe Map implementation</p>
-                  <div>
-                      <span class="badge">Node.js 18+</span>
-                      <span class="badge">TypeScript</span>
-                      <span class="badge">v1.0.3</span>
-                  </div>
               </div>
-              
               <div class="nav">
-                  <a href="README.md">📚 README</a>
-                  <a href="CHANGELOG.md">📝 Changelog</a>
-                  <a href="dist/">📦 Build Files</a>
-                  <a href="https://npmjs.com/package/turbo-map">📦 npm</a>
-                  <a href="https://github.com/chenfangyin/turbo-map">⭐ GitHub</a>
+                  <a href="README.md">README</a>
+                  <a href="CHANGELOG.md">Changelog</a>
+                  <a href="dist/">Build Files</a>
+                  <a href="https://npmjs.com/package/turbo-map">npm Package</a>
+                  <a href="https://github.com/chenfangyin/turbo-map">GitHub Repository</a>
               </div>
-
               <h2>Quick Start</h2>
-              <pre><code>npm install turbo-map
-
-import { TurboMap } from 'turbo-map';
-const map = new TurboMap();
-map.set({ id: 1 }, 'value');</code></pre>
-
-              <h2>Features</h2>
-              <ul>
-                  <li>Type-safe Map implementation</li>
-                  <li>Complex objects as keys</li>
-                  <li>LRU cache optimization</li>
-                  <li>ES Map API compatible</li>
-              </ul>
+              <pre><code>npm install turbo-map</code></pre>
           </body>
           </html>
-          HTML_END
-          
-          # Update version in HTML
-          sed -i "s/v1.0.3/v${PACKAGE_VERSION}/g" docs-site/index.html
-          
-          echo "Documentation site created successfully!"
-          ls -la docs-site/
+          EOF
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs-site
           publish_branch: gh-pages
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy docs v${{ steps.package-version.outputs.VERSION }}'
-
-      - name: Summary
-        if: always()
-        run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- Version: v${{ steps.package-version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-          echo "- URL: https://chenfangyin.github.io/turbo-map/" >> $GITHUB_STEP_SUMMARY
