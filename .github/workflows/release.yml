@@ -87,60 +87,54 @@ jobs:
           NPM_SCOPE: ${{ secrets.NPM_SCOPE || '' }}
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            ## What's Changed
+        run: |
+          # Extract version from tag
+          VERSION=${GITHUB_REF#refs/tags/}
+          
+          # Create release with GitHub CLI
+          gh release create "$VERSION" \
+            --title "Release $VERSION" \
+            --notes "## What's Changed
 
-            This release includes:
-            - Bug fixes and improvements
-            - Performance optimizations
-            - ESLint compatibility fixes
-            - ES module import fixes
-            - Benchmark script removal
-            - Documentation deployment fixes
-            - Type safety enhancements
+          This release includes:
+          - Bug fixes and improvements
+          - Performance optimizations
+          - ESLint compatibility fixes
+          - ES module import fixes
+          - Benchmark script removal
+          - Documentation deployment fixes
+          - Type safety enhancements
 
-            ## Installation
+          ## Installation
 
-            ```bash
-            npm install turbo-map
-            ```
+          \`\`\`bash
+          npm install turbo-map
+          \`\`\`
 
-            ## Usage
+          ## Usage
 
-            ```javascript
-            import { TurboMap } from 'turbo-map';
+          \`\`\`javascript
+          import { TurboMap } from 'turbo-map';
 
-            const map = new TurboMap();
-            map.set({ id: 1, name: 'test' }, 'value');
-            ```
-          draft: false
-          prerelease: false
+          const map = new TurboMap();
+          map.set({ id: 1, name: 'test' }, 'value');
+          \`\`\`"
 
       - name: Upload Release Assets
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/index.umd.min.js
-          asset_name: turbo-map.min.js
-          asset_content_type: application/javascript
-
-      - name: Upload Source Maps
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/index.umd.min.js.map
-          asset_name: turbo-map.min.js.map
-          asset_content_type: application/json
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          
+          # Upload minified bundle
+          gh release upload "$VERSION" \
+            "./dist/index.umd.min.js#turbo-map.min.js"
+          
+          # Upload source map
+          gh release upload "$VERSION" \
+            "./dist/index.umd.min.js.map#turbo-map.min.js.map"
 
       - name: Notify release success (Discord)
         if: success()

@@ -138,6 +138,7 @@ function main() {
     process.exit(1);
   }
 
+  try {
   // Run tests
   console.log('🧪 运行测试...');
   runCommand('npm run test:ci');
@@ -195,6 +196,7 @@ function main() {
   rollback(startState);
   process.exit(1);
 }
+}
 
 // 回滚函数
 function rollback(startState) {
@@ -229,4 +231,4 @@ function rollback(startState) {
 // 检查是否作为主模块运行
 if (import.meta.url === `file://${process.argv[1]}` || process.argv[1].endsWith('release.js')) {
   main();
-} 
+}

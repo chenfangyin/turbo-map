@@ -60,9 +60,14 @@ export class TypeUtils {
       const keys = Object.keys(value)
       
       // Check for getters/setters
-      const descriptor = Object.getOwnPropertyDescriptor(value, keys[0])
-      if (descriptor && (descriptor.get || descriptor.set)) {
-        return false
+      if (keys.length > 0) {
+        const firstKey = keys[0]
+        if (firstKey !== undefined) {
+          const descriptor = Object.getOwnPropertyDescriptor(value, firstKey)
+          if (descriptor && (descriptor.get || descriptor.set)) {
+            return false
+          }
+        }
       }
       
       return keys.length <= 5 && keys.every(key => {

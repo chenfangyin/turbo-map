@@ -84,6 +84,58 @@
             color: #667eea;
             margin-bottom: 10px;
         }
+        
+        .code-block {
+            background: #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            color: #e2e8f0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .code-block code {
+            color: #e2e8f0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .status-badge {
+                margin: 2px;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -91,10 +143,13 @@
         <div class="header">
             <h1>🚀 TurboMap</h1>
             <p>Turbocharged Mapping Tool - High-performance, type-safe Map implementation supporting complex nested objects as keys</p>
-            <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
-                <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; margin: 0 5px;">✅ Test Coverage: 62.29%</span>
-                <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; margin: 0 5px;">✅ Code Quality: A+</span>
-                <span style="background: #ffc107; color: black; padding: 4px 8px; border-radius: 4px; margin: 0 5px;">✅ CI/CD Ready</span>
+            <div style="margin-top: 20px; opacity: 0.9;">
+                <span class="status-badge" style="background: #28a745; color: white;">✅ Test Coverage: 62.29%</span>
+                <span class="status-badge" style="background: #007bff; color: white;">✅ Code Quality: A+</span>
+                <span class="status-badge" style="background: #ffc107; color: black;">✅ CI/CD Ready</span>
+                <span class="status-badge" style="background: #dc3545; color: white;">🔒 Security: Protected</span>
+                <span class="status-badge" style="background: #6f42c1; color: white;">⚙️ GitHub Actions: Modern</span>
+                <span class="status-badge" style="background: #20c997; color: white;">📦 Auto Release</span>
             </div>
         </div>
         
@@ -122,12 +177,27 @@
                     <p>Extensible hook system with custom behavior and plugin management</p>
                 </div>
                 <div class="feature">
-                    <h3>🚀 Advanced Features</h3>
-                    <p>Async operations, error recovery, diagnostics, and tiered caching</p>
+                    <h3>⚡ Advanced Features</h3>
+                    <p>Async operations, error recovery, diagnostics, tiered caching, and memory optimization</p>
+                </div>
+                <div class="feature">
+                    <h3>🔒 Security Enhanced</h3>
+                    <p>Automatic sensitive data masking and secure configuration management</p>
+                </div>
+                <div class="feature">
+                    <h3>🎯 Modern Workflow</h3>
+                    <p>Latest GitHub Actions, automated releases, and semantic versioning</p>
                 </div>
             </div>
             
             <h2>Quick Start</h2>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <h4 style="margin: 0 0 10px 0; color: #667eea;">📋 System Requirements</h4>
+                <p style="margin: 0; color: #666;">
+                    • Node.js >= 18.0.0<br>
+                    • TypeScript >= 4.0.0 (recommended)
+                </p>
+            </div>
             <div class="code-block">
                 <pre><code>npm install turbo-map
 
@@ -145,8 +215,9 @@ for (const [key, value] of userMap) {
             </div>
             
             <div style="text-align: center; margin-top: 30px;">
-                <a href="https://github.com/chenfangyin/turbo-map" class="btn">View on GitHub</a>
-                <a href="https://www.npmjs.com/package/turbo-map" class="btn">View on npm</a>
+                <a href="https://github.com/chenfangyin/turbo-map" class="btn">📖 View on GitHub</a>
+                <a href="https://www.npmjs.com/package/turbo-map" class="btn">📦 View on npm</a>
+                <a href="navigation.html" class="btn">🌐 Full Documentation</a>
             </div>
         </div>
     </div>

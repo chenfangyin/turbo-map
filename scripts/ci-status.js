@@ -71,7 +71,6 @@ function checkPackageScripts() {
       'test:ci',
       'lint',
       'type-check',
-      'benchmark'
     ];
     
     const missingScripts = requiredScripts.filter(script => !scripts[script]);

@@ -77,7 +77,7 @@ export {
 } from './utils/DiagnosticUtils'
 
 // Enhanced TurboMap interface
-import { MapKey } from './utils/TypeUtils'
+import type { MapKey } from './utils/TypeUtils'
 import { AsyncTurboMap, type AsyncTurboMapLike } from './core/AsyncTurboMap'
 import { PluginManager, type TurboMapPlugin } from './plugins/PluginManager'
 import { globalSerializer } from './core/Serializer'
@@ -378,6 +378,7 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
             operation: 'set',
             key,
             value,
+            metadata: undefined,
             timestamp: Date.now()
           }, key, value) as { key: K; value: V } | null
 
@@ -393,6 +394,7 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
             operation: 'set',
             key: finalKey,
             value: finalValue,
+            metadata: undefined,
             timestamp: Date.now()
           }, finalKey, finalValue)
 
@@ -423,6 +425,8 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
           const beforeResult = pluginManager?.executeBefore('beforeGet', {
             operation: 'get',
             key,
+            value: undefined,
+            metadata: undefined,
             timestamp: Date.now()
           }, key) as K | null
 
@@ -437,6 +441,7 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
               operation: 'get',
               key: finalKey,
               value,
+              metadata: undefined,
               timestamp: Date.now()
             }, finalKey, value) as V | undefined
             finalValue = pluginResult ?? value
@@ -486,6 +491,8 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
           const beforeResult = pluginManager?.executeBefore('beforeDelete', {
             operation: 'delete',
             key,
+            value: undefined,
+            metadata: undefined,
             timestamp: Date.now()
           }, key) as K | null
 
@@ -501,6 +508,8 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
           pluginManager?.executeAfter('afterDelete', {
             operation: 'delete',
             key: finalKey,
+            value: undefined,
+            metadata: undefined,
             timestamp: Date.now()
           }, finalKey, deleted)
 
@@ -529,6 +538,9 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
           // Plugin before hook
           const shouldClear = pluginManager?.executeBefore('beforeClear', {
             operation: 'clear',
+            key: undefined,
+            value: undefined,
+            metadata: undefined,
             timestamp: Date.now()
           }) !== false
 
@@ -539,6 +551,9 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
             // Plugin after hook
             pluginManager?.executeAfter('afterClear', {
               operation: 'clear',
+              key: undefined,
+              value: undefined,
+              metadata: undefined,
               timestamp: Date.now()
             })
           }

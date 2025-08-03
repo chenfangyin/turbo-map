@@ -84,6 +84,34 @@
             margin-top: 40px;
             color: #666;
         }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .nav-item {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -101,38 +129,51 @@
             </div>
             
             <div class="nav-item">
-                <h3>📖 API Reference</h3>
-                <p>Complete API documentation with examples and usage patterns.</p>
-                <a href="api.md">View API</a>
+                <h3>📖 English Documentation</h3>
+                <p>Complete documentation in English with examples and API reference.</p>
+                <a href="../docs/en/README.md">View English Docs</a>
             </div>
             
             <div class="nav-item">
-                <h3>🔧 CI/CD Guide</h3>
-                <p>Learn about the CI/CD setup and automated workflows.</p>
-                <a href="docs/zh-CN/CI-CD.md">View Guide</a>
+                <h3>🇨🇳 简体中文文档</h3>
+                <p>简体中文完整文档，包含API参考和使用示例。</p>
+                <a href="../docs/zh-CN/README.md">查看中文文档</a>
             </div>
             
             <div class="nav-item">
-                <h3>⚙️ Configuration</h3>
-                <p>Environment variables and configuration management.</p>
-                <a href="docs/zh-CN/ENV-CONFIG.md">View Guide</a>
+                <h3>🇹🇼 繁體中文文件</h3>
+                <p>繁體中文完整文件，包含API參考和使用範例。</p>
+                <a href="../docs/zh-TW/README.md">查看繁體中文文件</a>
             </div>
             
             <div class="nav-item">
-                <h3>📦 Installation</h3>
-                <p>Installation instructions and package information.</p>
-                <a href="README.md">View README</a>
+                <h3>🇯🇵 日本語ドキュメント</h3>
+                <p>日本語の完全なドキュメント、APIリファレンスと使用例を含む。</p>
+                <a href="../docs/ja/README.md">日本語ドキュメントを見る</a>
+            </div>
+            
+            <div class="nav-item">
+                <h3>📦 Installation Guide</h3>
+                <p>Installation instructions, system requirements and package information.</p>
+                <a href="../README.md">View Main README</a>
             </div>
             
             <div class="nav-item">
                 <h3>🛠️ Contributing</h3>
                 <p>How to contribute to the Turbo Map project.</p>
-                <a href="CONTRIBUTING.md">View Guide</a>
+                <a href="../CONTRIBUTING.md">View Contributing Guide</a>
             </div>
         </div>
         
         <div class="footer">
-            <p>📖 <a href="https://github.com/chenfangyin/turbo-map">View on GitHub</a> | 📦 <a href="https://www.npmjs.com/package/turbo-map">View on npm</a></p>
+            <p>
+                <a href="https://github.com/chenfangyin/turbo-map">📖 View on GitHub</a>
+                <a href="https://www.npmjs.com/package/turbo-map">📦 View on npm</a>
+                <a href="index.html">🏠 Home</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                🚀 TurboMap - Making object key mapping simple and efficient!
+            </p>
         </div>
     </div>
 </body>

@@ -30,17 +30,34 @@ export default {
       format: 'umd',
       name: 'TurboMap',
       sourcemap: true,
-      plugins: [terser()]
+      plugins: [terser({
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug']
+        },
+        mangle: {
+          reserved: ['TurboMap']
+        }
+      })]
     }
   ],
   plugins: [
-    resolve(),
+    resolve({
+      preferBuiltins: true
+    }),
     commonjs(),
     typescript({
       tsconfig: './tsconfig.json',
       declaration: true,
-      declarationDir: './dist'
+      declarationDir: './dist',
+      exclude: ['**/*.test.ts', '**/*.spec.ts']
     })
   ],
-  external: []
+  external: [],
+  treeshake: {
+    moduleSideEffects: false,
+    propertyReadSideEffects: false,
+    unknownGlobalSideEffects: false
+  }
 }

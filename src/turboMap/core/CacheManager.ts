@@ -8,10 +8,10 @@
 interface LRUNode<T> {
   key: string
   value: T
-  prev?: LRUNode<T>
-  next?: LRUNode<T>
-  frequency?: number
-  lastAccess?: number
+  prev: LRUNode<T> | undefined
+  next: LRUNode<T> | undefined
+  frequency: number | undefined
+  lastAccess: number | undefined
 }
 
 /**
@@ -33,8 +33,8 @@ export interface CacheStats {
  */
 export class EnhancedLRUCache<T> {
   private cache = new Map<string, LRUNode<T>>()
-  private head?: LRUNode<T>
-  private tail?: LRUNode<T>
+  private head: LRUNode<T> | undefined
+  private tail: LRUNode<T> | undefined
   private maxSize: number
   private stats: CacheStats
 
@@ -93,6 +93,8 @@ export class EnhancedLRUCache<T> {
       const newNode: LRUNode<T> = {
         key,
         value,
+        prev: undefined,
+        next: undefined,
         frequency: 1,
         lastAccess: Date.now()
       }

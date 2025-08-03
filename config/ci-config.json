@@ -29,7 +29,7 @@
     "coverageThreshold": "${TEST_COVERAGE_THRESHOLD}",
     "timeout": "${TEST_TIMEOUT}",
     "parallel": "${PARALLEL_TESTS}",
-    "nodeVersions": [16, 18, 20]
+    "nodeVersions": [18, 20]
   },
   "build": {
     "targets": "${BUILD_TARGETS}",

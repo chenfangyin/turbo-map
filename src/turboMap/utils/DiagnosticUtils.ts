@@ -598,7 +598,7 @@ export class DiagnosticAnalyzer {
     // Performance suggestions
     if (performance.hotspots.length > 0) {
       const slowestOp = performance.hotspots[0]
-      if (slowestOp.averageTime > 10) {
+      if (slowestOp && slowestOp.averageTime > 10) {
         suggestions.push({
           type: 'performance',
           priority: 'high',

@@ -11,7 +11,7 @@ import { TieredCacheManager } from './CacheManager'
  */
 export interface SerializationContext {
   visited: WeakSet<object>
-  cache?: TieredCacheManager<string>
+  cache: TieredCacheManager<string> | undefined
   depth: number
   maxDepth: number
 }
@@ -32,7 +32,7 @@ export interface SerializationStrategy {
 export class AdaptiveSerializer {
   private strategies = new Map<string, SerializationStrategy>()
   private strategyStats = new Map<string, { usage: number, avgTime: number }>()
-  private cache?: TieredCacheManager<string>
+  private cache: TieredCacheManager<string> | undefined
   private enableMetrics: boolean
   private objectIdMap = new WeakMap<object, string>()
 

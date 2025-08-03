@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test coverage
 - Multi-language documentation
 
-## [1.0.1] - 2025-01-27
+## [1.0.1] - 2025-08-01
 
 ### Enhanced
 - 📚 **Documentation Improvements**: Comprehensive API documentation with detailed examples

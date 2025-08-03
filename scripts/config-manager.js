@@ -134,7 +134,37 @@ class ConfigManager {
 
   showConfig() {
     console.log('📋 当前配置:');
-    console.log(JSON.stringify(this.resolvedConfig, null, 2));
+    
+    // 创建安全的配置副本，屏蔽敏感信息
+    const safeConfig = JSON.parse(JSON.stringify(this.resolvedConfig));
+    
+    // 屏蔽敏感字段
+    const sensitiveFields = ['token', 'password', 'secret', 'key', 'webhook'];
+    
+    const maskSensitiveData = (obj) => {
+      for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === 'object' && value !== null) {
+          maskSensitiveData(value);
+        } else if (typeof value === 'string') {
+          // 检查字段名是否包含敏感词
+          const isSensitive = sensitiveFields.some(field => 
+            key.toLowerCase().includes(field.toLowerCase())
+          );
+          
+          if (isSensitive && value.length > 0) {
+            // 显示前3个字符和后3个字符，中间用*替代
+            if (value.length > 6) {
+              obj[key] = value.substring(0, 3) + '*'.repeat(value.length - 6) + value.substring(value.length - 3);
+            } else if (value.length > 0) {
+              obj[key] = '*'.repeat(value.length);
+            }
+          }
+        }
+      }
+    };
+    
+    maskSensitiveData(safeConfig);
+    console.log(JSON.stringify(safeConfig, null, 2));
   }
 
   showSecrets() {

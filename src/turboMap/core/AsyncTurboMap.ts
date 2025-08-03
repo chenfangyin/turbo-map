@@ -2,7 +2,7 @@
  * Async TurboMap implementation for non-blocking operations
  */
 
-import { MapKey } from '../utils/TypeUtils'
+import type { MapKey } from '../utils/TypeUtils'
 import { globalErrorRecovery, ErrorType } from '../utils/ErrorRecovery'
 import { safeSetTimeout } from '../types/global'
 
@@ -22,18 +22,18 @@ export interface AsyncResult<T> {
 export interface BatchOperation<K, V> {
   type: 'set' | 'get' | 'delete' | 'has'
   key: K
-  value?: V
-  id?: string | number
+  value: V | undefined
+  id: string | number | undefined
 }
 
 /**
  * Batch result
  */
 export interface BatchResult<V> {
-  id?: string | number
+  id: string | number | undefined
   success: boolean
-  data?: V | boolean
-  error?: Error
+  data: V | boolean | undefined
+  error: Error | undefined
 }
 
 /**
@@ -278,13 +278,15 @@ export class AsyncTurboMap<K extends MapKey, V> implements AsyncTurboMapLike<K, 
         results.push({
           id: operation.id,
           success,
-          data: data as T | boolean
+          data: data as T | boolean,
+          error: undefined
         })
 
       } catch (error) {
         results.push({
           id: operation.id,
           success: false,
+          data: undefined,
           error: error as Error
         })
       }
@@ -327,6 +329,7 @@ export class AsyncTurboMap<K extends MapKey, V> implements AsyncTurboMapLike<K, 
         const operations: BatchOperation<K, V>[] = keys.map((key, index) => ({
           type: 'get' as const,
           key,
+          value: undefined,
           id: index
         }))
 
@@ -351,6 +354,7 @@ export class AsyncTurboMap<K extends MapKey, V> implements AsyncTurboMapLike<K, 
         const operations: BatchOperation<K, V>[] = keys.map((key, index) => ({
           type: 'delete' as const,
           key,
+          value: undefined,
           id: index
         }))
 

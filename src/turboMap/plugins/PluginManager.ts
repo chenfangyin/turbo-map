@@ -2,7 +2,7 @@
  * Enhanced plugin management system
  */
 
-import { MapKey } from '../utils/TypeUtils'
+import type { MapKey } from '../utils/TypeUtils'
 import { globalErrorRecovery, ErrorType } from '../utils/ErrorRecovery'
 import { safeSetTimeout, safeClearTimeout } from '../types/global'
 
@@ -48,9 +48,9 @@ export interface TurboMapPlugin<K extends MapKey, V> {
  */
 export interface PluginContext<K extends MapKey, V> {
   operation: string
-  key?: K
-  value?: V
-  metadata?: Record<string, unknown>
+  key: K | undefined
+  value: V | undefined
+  metadata: Record<string, unknown> | undefined
   timestamp: number
 }
 

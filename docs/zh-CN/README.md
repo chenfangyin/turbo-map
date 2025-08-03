@@ -9,8 +9,11 @@
 - ✅ **构建系统**: 支持 CommonJS、ESM、UMD 格式
 - ✅ **CI/CD**: 完整的自动化流水线
 - ✅ **脚本优化**: 所有脚本功能完整且无冗余
-- ✅ **安全审计**: 通过安全检查
+- ✅ **安全审计**: 通过安全检查，敏感信息完全保护
 - ✅ **性能测试**: 基准测试正常运行
+- ✅ **GitHub Actions**: 所有工作流现代化，使用最新稳定版本
+- ✅ **版本管理**: 自动化发布流程，支持语义化版本控制
+- ✅ **文档部署**: GitHub Pages 自动部署
 
 ## 📖 目录
 
@@ -65,7 +68,7 @@
 ### 安装
 
 #### 系统要求
-- Node.js >= 14.0.0
+- Node.js >= 18.0.0
 - TypeScript >= 4.0.0 (推荐)
 
 #### 安装命令
@@ -390,6 +393,33 @@ interface EnhancedTurboMapLike<K, V> {
   // 调试工具
   getSerializedKey(key: K): string
 }
+```
+
+### 工厂函数
+
+#### `turboMapFactory<K, V>()`
+
+创建类型安全的工厂函数。
+
+```typescript
+const createUserCache = turboMapFactory<{ id: number }, UserData>()
+
+const userCache = createUserCache({
+  enableCache: true,
+  cacheMaxSize: 500
+})
+```
+
+#### `createTypeSafeTurboMap<T>()`
+
+创建强类型工厂函数，具有更好的类型推断。
+
+```typescript
+const createApiCache = createTypeSafeTurboMap<ApiRequest>()
+
+const apiCache = createApiCache<ApiRequest, Response>({
+  enableMetrics: true
+})
 ```
 
 ### 类型定义
@@ -1307,11 +1337,6 @@ npm run config:validate
 
 ### 性能监控和调试
 
-#### 基准测试
-```bash
-# 运行性能基准测试
-npm run benchmark
-
 # 生成性能报告
 npm run test:coverage
 ```
@@ -1426,6 +1451,21 @@ npm run release:patch
 - ✅ **会触发**: 推送版本标签 (`git push origin v1.0.1`)
 - ❌ **不会触发**: 普通代码推送 (`git push origin main`)
 - ❌ **不会触发**: 功能分支推送 (`git push origin feature-branch`)
+
+#### GitHub Actions 现代化更新
+- **废弃 Actions 替换**: 
+  - `actions/create-release@v1` → GitHub CLI (`gh release create`)
+  - `actions/upload-release-asset@v1` → GitHub CLI (`gh release upload`)
+- **版本更新**: 
+  - `codecov/codecov-action@v3` → `v4`
+  - `8398a7/action-slack@v3` → `v4`
+  - `actions/upload-pages-artifact@v3` → `v4`
+  - `dependabot/fetch-metadata@v1` → `v2`
+
+#### 安全增强功能
+- **敏感信息保护**: 配置管理器自动屏蔽所有敏感字段（tokens、webhooks、passwords等）
+- **显示格式**: 显示前3个字符和后3个字符，中间用*替代
+- **智能检测**: 自动识别并保护包含 token、secret、key、password、webhook 等敏感字段
 
 ### 语义化版本控制
 
