@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="assets/logo.svg" alt="TurboMap Logo" width="128" height="128">
+</div>
+
 # 🚀 TurboMap - Turbocharged Mapping Tool
 
 > High-performance, type-safe Map implementation that supports complex nested objects as keys, fully compatible with ES Map API

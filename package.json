@@ -3,6 +3,7 @@
   "version": "1.0.4",
   "type": "module",
   "description": "High-performance, type-safe Map implementation supporting complex nested objects as keys, fully compatible with ES Map API",
+  "icon": "assets/logo.svg",
   "keywords": [
     "map",
     "object-key",
@@ -36,6 +37,7 @@
   },
   "files": [
     "dist",
+    "assets",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
