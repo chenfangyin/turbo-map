@@ -72,7 +72,8 @@
     "config:show": "node scripts/config-manager.js show",
     "config:generate-env": "node scripts/config-manager.js generate-env",
     "security:check": "node scripts/security-check.js",
-    "setup:github-pages": "node scripts/setup-github-pages.js"
+    "setup:github-pages": "node scripts/setup-github-pages.js",
+    "badges:check": "node scripts/check-dynamic-badges.js"
   },
   "repository": {
     "type": "git",

@@ -6,6 +6,15 @@
 
 > 一个高性能、类型安全的Map实现，支持以复杂嵌套对象作为键，完全兼容ES Map API
 
+[![CI/CD](https://github.com/chenfangyin/turbo-map/workflows/CI%2FCD/badge.svg)](https://github.com/chenfangyin/turbo-map/actions)
+[![Release](https://github.com/chenfangyin/turbo-map/workflows/Release/badge.svg)](https://github.com/chenfangyin/turbo-map/actions)
+[![Deploy Docs](https://github.com/chenfangyin/turbo-map/workflows/Deploy%20Documentation/badge.svg)](https://github.com/chenfangyin/turbo-map/actions)
+[![npm version](https://img.shields.io/npm/v/turbo-map.svg?style=flat)](https://www.npmjs.com/package/turbo-map)
+[![npm downloads](https://img.shields.io/npm/dm/turbo-map.svg?style=flat)](https://www.npmjs.com/package/turbo-map)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+
 ## 📊 项目状态
 
 - ✅ **测试覆盖率**: 62.29% (197个测试全部通过)
