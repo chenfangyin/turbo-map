@@ -312,14 +312,27 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
         
         // Try cache first
         if (cache) {
-          // Use a more stable cache key for objects
-          const cacheKey = typeof key === 'object' && key !== null 
-            ? `obj_${globalFastHasher.fastHash(key) || Date.now()}_${Math.random()}`
-            : String(key)
-          const cached = cache.get(cacheKey)
-          if (cached !== undefined) {
-            cacheHits++
-            return cached
+          // Generate appropriate cache key based on type
+          let cacheKey: string
+          if (typeof key === 'object' && key !== null) {
+            // Use hash for objects
+            cacheKey = `obj_${globalFastHasher.fastHash(key) || Date.now()}_${Math.random()}`
+          } else if (typeof key === 'symbol') {
+            // For symbols, skip caching to ensure uniqueness is preserved
+            // Each symbol instance should be serialized fresh
+            cacheKey = `symbol_skip_${Math.random()}`
+          } else {
+            // For primitives, use string representation
+            cacheKey = String(key)
+          }
+          
+          // Only use cache for non-symbol keys
+          if (typeof key !== 'symbol') {
+            const cached = cache.get(cacheKey)
+            if (cached !== undefined) {
+              cacheHits++
+              return cached
+            }
           }
           cacheMisses++
         }
@@ -329,8 +342,8 @@ function createEnhancedTurboMapInternal<K extends MapKey, V>(
           ? globalSerializer.serialize(key)
           : JSON.stringify(key)
 
-        // Cache result
-        if (cache) {
+        // Cache result (skip caching for symbols to preserve uniqueness)
+        if (cache && typeof key !== 'symbol') {
           const cacheKey = typeof key === 'object' && key !== null 
             ? `obj_${globalFastHasher.fastHash(key) || Date.now()}_${Math.random()}`
             : String(key)

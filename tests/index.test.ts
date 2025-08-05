@@ -128,6 +128,45 @@ describe('TurboMap Main Entry', () => {
       expect(turboMap.get(null as any)).toBe(1);
       expect(turboMap.get(undefined as any)).toBe(2);
     });
+
+    test('should handle Date objects as keys correctly', () => {
+      const date1 = new Date('2024-01-15T10:30:00.000Z');
+      const date2 = new Date('2024-01-15T10:30:00.000Z'); // Same timestamp
+      const date3 = new Date('2024-01-15T10:31:00.000Z'); // Different timestamp
+
+      turboMap.set(date1, 'value1');
+      turboMap.set(date3, 'value3');
+
+      // Same timestamp should retrieve same value
+      expect(turboMap.get(date1)).toBe('value1');
+      expect(turboMap.get(date2)).toBe('value1');
+      expect(turboMap.get(date3)).toBe('value3');
+      
+      // Should have 2 unique keys
+      expect(turboMap.size).toBe(2);
+    });
+
+    test('should handle Symbol keys with proper uniqueness', () => {
+      const sym1 = Symbol('test');
+      const sym2 = Symbol('test'); // Different instance, same description
+      const globalSym1 = Symbol.for('shared');
+      const globalSym2 = Symbol.for('shared'); // Same global symbol
+
+      turboMap.set(sym1, 'value1');
+      turboMap.set(sym2, 'value2');
+      turboMap.set(globalSym1, 'global_value');
+
+      // Different symbol instances should be unique
+      expect(turboMap.get(sym1)).toBe('value1');
+      expect(turboMap.get(sym2)).toBe('value2');
+      
+      // Global symbols should be identical
+      expect(turboMap.get(globalSym1)).toBe('global_value');
+      expect(turboMap.get(globalSym2)).toBe('global_value');
+      
+      // Should have 3 unique keys total
+      expect(turboMap.size).toBe(3);
+    });
   });
 
   describe('Performance and Metrics', () => {

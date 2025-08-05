@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2025-01-15
+
+### 🐛 Critical Symbol Serialization Bug Fix
+
+#### Symbol Uniqueness Issue Resolution
+- 🔧 **Fixed Symbol Serialization**: Resolved critical bug where different Symbol instances with same description were incorrectly treated as identical keys
+- 🆔 **Unique Symbol IDs**: Each Symbol instance now receives a unique identifier (`Symbol.1("test")`, `Symbol.2("test")`)
+- 🌐 **Global Symbol Support**: Proper handling of `Symbol.for()` - global symbols with same key correctly identified as identical
+- 🚫 **Cache Bypass**: Symbol keys now bypass caching to ensure proper uniqueness preservation
+
+#### Technical Improvements
+- **AdaptiveSerializer Enhancement**: Added dedicated `serializeSymbol()` method with counter-based uniqueness
+- **Cache Logic Fix**: Modified main TurboMap cache logic to skip Symbol caching, preventing false matches
+- **Symbol Counter Management**: Implemented proper symbol ID counter with reset capabilities
+
+#### Test Coverage
+- ✅ **Comprehensive Testing**: Added 35+ new test cases covering Symbol and Date object serialization
+- 🔬 **Edge Cases**: Tests for symbols without description, global symbols, mixed symbol types
+- 📊 **Serialization Tests**: Detailed validation of serialization key generation and uniqueness
+
+### 🚀 Performance & Compatibility
+- **Date Objects**: Confirmed Date objects work correctly (based on timestamp, not affected by bug)
+- **Backward Compatible**: All existing functionality preserved, no breaking changes
+- **Type Safety**: Maintained full TypeScript type safety and ES Map API compatibility
+
+### Migration Notes
+**For Users**: No action required - this is a bug fix with no API changes
+**For Contributors**: Symbol behavior now correctly matches JavaScript semantics
+
 ## [1.0.4] - 2025-08-03
 
 ### 🔧 Critical Documentation & Deployment Fixes

@@ -61,7 +61,7 @@ describe('Serializer', () => {
     test('should handle symbols', () => {
       const sym = Symbol('test');
       const result = serializer.serialize(sym);
-      expect(result).toContain('Symbol(');
+      expect(result).toMatch(/^Symbol\.\d+\("test"\)$/);
     });
 
     test('should handle dates', () => {

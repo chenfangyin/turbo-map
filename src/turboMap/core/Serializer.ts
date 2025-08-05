@@ -35,6 +35,8 @@ export class AdaptiveSerializer {
   private cache: TieredCacheManager<string> | undefined
   private enableMetrics: boolean
   private objectIdMap = new WeakMap<object, string>()
+  private symbolIdMap = new Map<symbol, string>()
+  private symbolIdCounter = 0
 
   constructor(enableCache = true, enableMetrics = true) {
     this.cache = enableCache ? new TieredCacheManager<string>({
@@ -59,7 +61,7 @@ export class AdaptiveSerializer {
         if (obj === null) return 'null'
         if (obj === undefined) return 'undefined'
         if (typeof obj === 'string') return `"${obj}"`
-        if (typeof obj === 'symbol') return `Symbol(${obj.toString()})`
+        if (typeof obj === 'symbol') return this.serializeSymbol(obj)
         if (typeof obj === 'bigint') return `${obj}n`
         return String(obj)
       }
@@ -308,7 +310,7 @@ export class AdaptiveSerializer {
       if (typeof obj === 'string') return `"${obj}"`
       if (typeof obj === 'number') return String(obj)
       if (typeof obj === 'boolean') return String(obj)
-      if (typeof obj === 'symbol') return `Symbol(${obj.toString()})`
+      if (typeof obj === 'symbol') return this.serializeSymbol(obj)
       if (typeof obj === 'bigint') return `${obj}n`
       
       // Last resort - try JSON.stringify
@@ -319,6 +321,36 @@ export class AdaptiveSerializer {
       }
     } catch {
       return '[CriticalSerializationError]'
+    }
+  }
+
+  /**
+   * Serialize Symbol with proper uniqueness handling
+   */
+  private serializeSymbol(sym: symbol): string {
+    try {
+      // Check if it's a global symbol (created with Symbol.for())
+      const globalKey = Symbol.keyFor(sym)
+      if (globalKey !== undefined) {
+        // Global symbols with same key should be treated as identical
+        return `Symbol.for("${globalKey}")`
+      }
+      
+      // For regular symbols, each instance should be unique
+      if (this.symbolIdMap.has(sym)) {
+        return this.symbolIdMap.get(sym)!
+      }
+      
+      // Generate unique ID for this symbol instance
+      this.symbolIdCounter++
+      const symbolDescription = sym.description || 'unnamed'
+      const uniqueId = `Symbol.${this.symbolIdCounter}("${symbolDescription}")`
+      this.symbolIdMap.set(sym, uniqueId)
+      
+      return uniqueId
+    } catch {
+      // Fallback for any errors
+      return `Symbol(${sym.toString()})`
     }
   }
 
@@ -407,6 +439,8 @@ export class AdaptiveSerializer {
   clearCache(): void {
     try {
       this.cache?.clear()
+      this.symbolIdMap.clear()
+      this.symbolIdCounter = 0
     } catch (error) {
       console.warn('AdaptiveSerializer: Error clearing cache:', error)
     }
