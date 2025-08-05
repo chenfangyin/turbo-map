@@ -437,7 +437,7 @@ const apiCache = createApiCache<ApiRequest, Response>({
 
 ### Symbol 和 Date 鍵的特殊行為 🆕
 
-從 v1.0.9 開始，TurboMap 對 Symbol 和 Date 鍵有特殊的處理行為：
+從 v1.0.10 開始，TurboMap 對 Symbol 和 Date 鍵有特殊的處理行為：
 
 #### Symbol 鍵一致性
 ```typescript

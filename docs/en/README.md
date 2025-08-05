@@ -408,7 +408,7 @@ const apiCache = createApiCache<ApiRequest, Response>({
 
 ### Symbol and Date Key Special Behavior 🆕
 
-Starting from v1.0.9, TurboMap has special handling behavior for Symbol and Date keys:
+Starting from v1.0.10, TurboMap has special handling behavior for Symbol and Date keys:
 
 #### Symbol Key Consistency
 ```typescript

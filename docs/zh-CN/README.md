@@ -604,7 +604,7 @@ class ErrorRecoveryManager {
 
 ### Symbol 和 Date 键的特殊行为 🆕
 
-从 v1.0.9 开始，TurboMap 对 Symbol 和 Date 键有特殊的处理行为：
+从 v1.0.10 开始，TurboMap 对 Symbol 和 Date 键有特殊的处理行为：
 
 #### Symbol 键一致性
 ```typescript

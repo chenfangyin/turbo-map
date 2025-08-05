@@ -373,7 +373,7 @@ const apiCache = createApiCache<ApiRequest, Response>({
 
 ### SymbolとDateキーの特殊な動作 🆕
 
-v1.0.9から、TurboMapはSymbolとDateキーに対して特殊な処理動作があります：
+v1.0.10から、TurboMapはSymbolとDateキーに対して特殊な処理動作があります：
 
 #### Symbolキーの一貫性
 ```typescript
