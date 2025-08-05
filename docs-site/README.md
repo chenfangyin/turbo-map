@@ -97,6 +97,53 @@ for (const [key, value] of userMap) {
 }
 ```
 
+## 🆕 What's New in v1.0.9
+
+### Symbol and Date Key Special Behavior
+
+Starting from v1.0.9, TurboMap has special handling behavior for Symbol and Date keys:
+
+#### Symbol Key Consistency
+```typescript
+const symbolMap = createTurboMap<symbol, string>()
+
+// ✨ All regular Symbol() instances are treated as the same key
+symbolMap.set(Symbol('test'), 'value1')
+symbolMap.set(Symbol('different'), 'value2') // overwrites value1
+
+console.log(symbolMap.get(Symbol('anything'))) // 'value2'
+console.log(symbolMap.size) // 1
+
+// 🌐 Symbol.for() still works based on global keys
+symbolMap.set(Symbol.for('global'), 'global_value')
+console.log(symbolMap.get(Symbol.for('global'))) // 'global_value'
+console.log(symbolMap.size) // 2
+```
+
+#### Date Key Timestamp Distinction
+```typescript
+const dateMap = createTurboMap<Date, string>()
+
+// 📅 All Date objects are distinguished by timestamp
+const date1 = new Date('2024-01-01')
+const date2 = new Date('2024-01-01') // same timestamp
+const date3 = new Date('2024-01-02') // different timestamp
+
+dateMap.set(date1, 'value1')
+dateMap.set(date2, 'value2') // overwrites value1 (same timestamp)
+dateMap.set(date3, 'value3')
+
+console.log(dateMap.get(date1)) // 'value2'
+console.log(dateMap.get(date2)) // 'value2' 
+console.log(dateMap.get(date3)) // 'value3'
+console.log(dateMap.size) // 2
+
+// ⏰ Parameterless new Date() is also distinguished by call timing
+dateMap.set(new Date(), 'current1')
+// Later...
+dateMap.set(new Date(), 'current2') // different timestamp, won't overwrite
+```
+
 ## ✨ Core Features
 
 ### 🚀 Turbo Performance

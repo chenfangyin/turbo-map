@@ -435,6 +435,53 @@ const apiCache = createApiCache<ApiRequest, Response>({
 
 ## 💡 使用範例
 
+### Symbol 和 Date 鍵的特殊行為 🆕
+
+從 v1.0.9 開始，TurboMap 對 Symbol 和 Date 鍵有特殊的處理行為：
+
+#### Symbol 鍵一致性
+```typescript
+import { createTurboMap } from 'turbo-map'
+
+const symbolMap = createTurboMap<symbol, string>()
+
+// ✨ 所有普通 Symbol() 執行個體被當作相同鍵
+symbolMap.set(Symbol('test'), 'value1')
+symbolMap.set(Symbol('different'), 'value2') // 覆蓋 value1
+
+console.log(symbolMap.get(Symbol('anything'))) // 'value2'
+console.log(symbolMap.size) // 1
+
+// 🌐 Symbol.for() 仍然基於全域鍵運作
+symbolMap.set(Symbol.for('global'), 'global_value')
+console.log(symbolMap.get(Symbol.for('global'))) // 'global_value'
+console.log(symbolMap.size) // 2 (一個普通Symbol鍵 + 一個全域Symbol鍵)
+```
+
+#### Date 鍵時間戳區分
+```typescript
+const dateMap = createTurboMap<Date, string>()
+
+// 📅 所有 Date 物件都根據時間戳區分
+const date1 = new Date('2024-01-01')
+const date2 = new Date('2024-01-01') // 相同時間戳
+const date3 = new Date('2024-01-02') // 不同時間戳
+
+dateMap.set(date1, 'value1')
+dateMap.set(date2, 'value2') // 覆蓋 value1（相同時間戳）
+dateMap.set(date3, 'value3')
+
+console.log(dateMap.get(date1)) // 'value2'
+console.log(dateMap.get(date2)) // 'value2' 
+console.log(dateMap.get(date3)) // 'value3'
+console.log(dateMap.size) // 2
+
+// ⏰ 無參數 new Date() 也根據呼叫時機區分
+dateMap.set(new Date(), 'current1')
+// 稍後...
+dateMap.set(new Date(), 'current2') // 不同的時間戳，不會覆蓋
+```
+
 ### 基礎物件鍵對應
 
 ```typescript

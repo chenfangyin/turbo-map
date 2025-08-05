@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🎯 **BEHAVIOR CHANGE** - Key Consistency Feature
 
-#### **New Consistent Key Behavior**
+#### **New Key Behavior**
 - 🔄 **Symbol Consistency**: All `Symbol()` instances now treated as the same key
-- 📅 **Date Consistency**: `new Date()` without parameters treated as the same key within 5-second time window
+- 📅 **Date Distinction**: All `Date` objects distinguished by timestamp (including parameterless `new Date()`)
 - 🌐 **Global Symbol Support**: `Symbol.for()` still works based on global key
 
 #### **What Changed**
@@ -32,18 +32,20 @@ console.log(map.get(Symbol())); // 'value2'
 
 #### **Date Behavior**
 ```javascript
-// Parameterized dates - distinct by timestamp
+// All dates distinguished by timestamp
 map.set(new Date('2024-01-01'), 'value1');
 map.set(new Date('2024-01-02'), 'value2'); // different keys
 
-// No-parameter dates - same key within time window
+// Parameterless new Date() also distinguished by call timing
 map.set(new Date(), 'current1');
-map.set(new Date(), 'current2'); // overwrites current1 (if within 5s)
+map.set(new Date(), 'current2'); // different keys (different timestamps)
+console.log(map.size); // 4 - all different
 ```
 
 #### **Breaking Changes**
 - ⚠️ **Symbol Behavior**: `Symbol()` instances no longer unique - all treated as same key
-- ⚠️ **Test Updates**: Updated test cases to reflect new consistent behavior
+- ✅ **Date Behavior**: Maintained timestamp-based distinction for all `Date` objects
+- ⚠️ **Test Updates**: Updated test cases to reflect new Symbol consistency behavior
 
 ### **Migration Guide**
 If you need unique Symbol keys, use `Symbol.for()` with different keys:

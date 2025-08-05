@@ -371,6 +371,53 @@ const apiCache = createApiCache<ApiRequest, Response>({
 
 ## 💡 使用例
 
+### SymbolとDateキーの特殊な動作 🆕
+
+v1.0.9から、TurboMapはSymbolとDateキーに対して特殊な処理動作があります：
+
+#### Symbolキーの一貫性
+```typescript
+import { createTurboMap } from 'turbo-map'
+
+const symbolMap = createTurboMap<symbol, string>()
+
+// ✨ すべての通常のSymbol()インスタンスは同じキーとして扱われます
+symbolMap.set(Symbol('test'), 'value1')
+symbolMap.set(Symbol('different'), 'value2') // value1を上書き
+
+console.log(symbolMap.get(Symbol('anything'))) // 'value2'
+console.log(symbolMap.size) // 1
+
+// 🌐 Symbol.for()はグローバルキーに基づいて動作します
+symbolMap.set(Symbol.for('global'), 'global_value')
+console.log(symbolMap.get(Symbol.for('global'))) // 'global_value'
+console.log(symbolMap.size) // 2 (通常のSymbolキー1つ + グローバルSymbolキー1つ)
+```
+
+#### Dateキーのタイムスタンプ区別
+```typescript
+const dateMap = createTurboMap<Date, string>()
+
+// 📅 すべてのDateオブジェクトはタイムスタンプで区別されます
+const date1 = new Date('2024-01-01')
+const date2 = new Date('2024-01-01') // 同じタイムスタンプ
+const date3 = new Date('2024-01-02') // 異なるタイムスタンプ
+
+dateMap.set(date1, 'value1')
+dateMap.set(date2, 'value2') // value1を上書き（同じタイムスタンプ）
+dateMap.set(date3, 'value3')
+
+console.log(dateMap.get(date1)) // 'value2'
+console.log(dateMap.get(date2)) // 'value2' 
+console.log(dateMap.get(date3)) // 'value3'
+console.log(dateMap.size) // 2
+
+// ⏰ パラメータなしのnew Date()も呼び出しタイミングで区別されます
+dateMap.set(new Date(), 'current1')
+// 後で...
+dateMap.set(new Date(), 'current2') // 異なるタイムスタンプ、上書きしません
+```
+
 ### 基本的なオブジェクトキーマッピング
 
 ```typescript

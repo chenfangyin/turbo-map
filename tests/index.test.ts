@@ -146,13 +146,20 @@ describe('TurboMap Main Entry', () => {
       // Should have 2 unique keys for different timestamps
       expect(turboMap.size).toBe(2);
       
-      // 无参数的 new Date() 应该被当作相同键（在时间范围内）
+      // 无参数的 new Date() 应该根据调用时机区分（不同的）
       const turboMap2 = createEnhancedTurboMap<Date, string>();
-      turboMap2.set(new Date(), 'current-time');
       
-      // 短时间内创建的 Date 应该被视为相同键
-      const result = turboMap2.get(new Date());
-      expect(result).toBe('current-time');
+      const currentDate1 = new Date();
+      // 确保有微小的时间差
+      const currentDate2 = new Date(Date.now() + 1);
+      
+      turboMap2.set(currentDate1, 'first-time');
+      turboMap2.set(currentDate2, 'second-time');
+      
+      // 不同时间戳应该是不同的键
+      expect(turboMap2.get(currentDate1)).toBe('first-time');
+      expect(turboMap2.get(currentDate2)).toBe('second-time');
+      expect(turboMap2.size).toBe(2);
     });
 
     test('should handle Symbol keys with proper consistency', () => {

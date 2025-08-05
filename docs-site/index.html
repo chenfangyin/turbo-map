@@ -139,11 +139,15 @@
             <div class="code-block">
                 <pre><code>npm install turbo-map
 
-import { TurboMap } from 'turbo-map';
+import { createTurboMap } from 'turbo-map';
 
-const map = new TurboMap();
+const map = createTurboMap();
 map.set({ id: 1, name: 'test' }, 'value');
-console.log(map.get({ id: 1, name: 'test' })); // 'value'</code></pre>
+console.log(map.get({ id: 1, name: 'test' })); // 'value'
+
+// 🆕 v1.0.9: Special Symbol behavior
+map.set(Symbol(), 'symbol-value');
+console.log(map.get(Symbol())); // 'symbol-value'</code></pre>
             </div>
             
             <div style="text-align: center; margin-top: 30px;">

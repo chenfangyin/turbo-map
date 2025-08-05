@@ -602,6 +602,53 @@ class ErrorRecoveryManager {
 
 ## 💡 使用示例
 
+### Symbol 和 Date 键的特殊行为 🆕
+
+从 v1.0.9 开始，TurboMap 对 Symbol 和 Date 键有特殊的处理行为：
+
+#### Symbol 键一致性
+```typescript
+import { createTurboMap } from 'turbo-map'
+
+const symbolMap = createTurboMap<symbol, string>()
+
+// ✨ 所有普通 Symbol() 实例被当作相同键
+symbolMap.set(Symbol('test'), 'value1')
+symbolMap.set(Symbol('different'), 'value2') // 覆盖 value1
+
+console.log(symbolMap.get(Symbol('anything'))) // 'value2'
+console.log(symbolMap.size) // 1
+
+// 🌐 Symbol.for() 仍然基于全局键工作
+symbolMap.set(Symbol.for('global'), 'global_value')
+console.log(symbolMap.get(Symbol.for('global'))) // 'global_value'
+console.log(symbolMap.size) // 2 (一个普通Symbol键 + 一个全局Symbol键)
+```
+
+#### Date 键时间戳区分
+```typescript
+const dateMap = createTurboMap<Date, string>()
+
+// 📅 所有 Date 对象都根据时间戳区分
+const date1 = new Date('2024-01-01')
+const date2 = new Date('2024-01-01') // 相同时间戳
+const date3 = new Date('2024-01-02') // 不同时间戳
+
+dateMap.set(date1, 'value1')
+dateMap.set(date2, 'value2') // 覆盖 value1（相同时间戳）
+dateMap.set(date3, 'value3')
+
+console.log(dateMap.get(date1)) // 'value2'
+console.log(dateMap.get(date2)) // 'value2' 
+console.log(dateMap.get(date3)) // 'value3'
+console.log(dateMap.size) // 2
+
+// ⏰ 无参数 new Date() 也根据调用时机区分
+dateMap.set(new Date(), 'current1')
+// 稍后...
+dateMap.set(new Date(), 'current2') // 不同的时间戳，不会覆盖
+```
+
 ### 基础对象键映射
 
 ```typescript

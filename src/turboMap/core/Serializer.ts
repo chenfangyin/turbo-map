@@ -106,26 +106,14 @@ export class AdaptiveSerializer {
       }
     })
 
-    // Date strategy  
+    // Date strategy
     this.addStrategy({
       name: 'date',
       priority: 85,
       canHandle: (obj) => obj instanceof Date,
-      serialize: (obj) => {
-        const date = obj as Date
-        const timestamp = date.getTime()
-        
-        // 用户需求：只有无参数的 new Date() 才视为相同
-        // 检测是否接近当前时间（5秒误差范围内认为是无参数构造）
-        const now = Date.now()
-        const timeDiff = Math.abs(now - timestamp)
-        
-        if (timeDiff <= 5000) { // 5秒误差范围
-          return `[Date:no-args]`
-        } else {
-          return `[Date:${timestamp}]`
-        }
-      }
+      // 用户需求：无参数 new Date() 应该根据调用时机区分（不同的）
+      // 所有 Date 对象都根据时间戳来区分
+      serialize: (obj) => `[Date:${(obj as Date).getTime()}]`
     })
 
     // RegExp strategy
