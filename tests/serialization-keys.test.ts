@@ -70,16 +70,18 @@ describe('Key Serialization Tests', () => {
   });
 
   describe('Symbol Keys', () => {
-    test('should treat different Symbol instances as unique keys even with same description', () => {
+    test('should treat different Symbol instances as the same key (user requirement)', () => {
       const sym1 = Symbol('test');
       const sym2 = Symbol('test');
 
       turboMap.set(sym1, 'value1');
-      turboMap.set(sym2, 'value2');
+      turboMap.set(sym2, 'value2'); // 应该覆盖 value1
 
-      expect(turboMap.get(sym1)).toBe('value1');
+      // 用户需求：所有普通 Symbol() 都被当作相同键
+      expect(turboMap.get(sym1)).toBe('value2');
       expect(turboMap.get(sym2)).toBe('value2');
-      expect(turboMap.size).toBe(2);
+      expect(turboMap.get(Symbol('anything'))).toBe('value2');
+      expect(turboMap.size).toBe(1);
     });
 
     test('should treat global symbols with same key as identical', () => {
@@ -93,16 +95,17 @@ describe('Key Serialization Tests', () => {
       expect(turboMap.size).toBe(1);
     });
 
-    test('should generate unique serialized keys for different Symbol instances', () => {
+    test('should generate identical serialized keys for different Symbol instances (user requirement)', () => {
       const sym1 = Symbol('test');
       const sym2 = Symbol('test');
 
       const key1 = turboMap.getSerializedKey(sym1);
       const key2 = turboMap.getSerializedKey(sym2);
 
-      expect(key1).not.toBe(key2);
-      expect(key1).toMatch(/^Symbol\.\d+\("test"\)$/);
-      expect(key2).toMatch(/^Symbol\.\d+\("test"\)$/);
+      // 用户需求：所有普通 Symbol() 都序列化为相同字符串
+      expect(key1).toBe(key2);
+      expect(key1).toBe('Symbol()');
+      expect(key2).toBe('Symbol()');
     });
 
     test('should generate identical serialized keys for global symbols', () => {
@@ -116,26 +119,27 @@ describe('Key Serialization Tests', () => {
       expect(key1).toBe('Symbol.for("shared")');
     });
 
-    test('should handle symbols without description', () => {
+    test('should handle symbols without description consistently (user requirement)', () => {
       const sym1 = Symbol();
       const sym2 = Symbol();
 
       turboMap.set(sym1, 'value1');
-      turboMap.set(sym2, 'value2');
+      turboMap.set(sym2, 'value2'); // 应该覆盖 value1
 
-      expect(turboMap.get(sym1)).toBe('value1');
+      // 用户需求：所有普通 Symbol() 都被当作相同键
+      expect(turboMap.get(sym1)).toBe('value2');
       expect(turboMap.get(sym2)).toBe('value2');
-      expect(turboMap.size).toBe(2);
+      expect(turboMap.size).toBe(1);
 
       const key1 = turboMap.getSerializedKey(sym1);
       const key2 = turboMap.getSerializedKey(sym2);
       
-      expect(key1).toMatch(/^Symbol\.\d+\("unnamed"\)$/);
-      expect(key2).toMatch(/^Symbol\.\d+\("unnamed"\)$/);
-      expect(key1).not.toBe(key2);
+      expect(key1).toBe('Symbol()');
+      expect(key2).toBe('Symbol()');
+      expect(key1).toBe(key2);
     });
 
-    test('should handle mixed symbol types', () => {
+    test('should handle mixed symbol types (user requirement)', () => {
       const regularSym = Symbol('regular');
       const globalSym = Symbol.for('global');
       const anotherRegularSym = Symbol('regular');
@@ -143,18 +147,18 @@ describe('Key Serialization Tests', () => {
 
       turboMap.set(regularSym, 'regular1');
       turboMap.set(globalSym, 'global');
-      turboMap.set(anotherRegularSym, 'regular2');
+      turboMap.set(anotherRegularSym, 'regular2'); // 应该覆盖 regular1
 
-      // Regular symbols with same description should be different
-      expect(turboMap.get(regularSym)).toBe('regular1');
+      // 用户需求：普通 Symbol() 都被当作相同键
+      expect(turboMap.get(regularSym)).toBe('regular2');
       expect(turboMap.get(anotherRegularSym)).toBe('regular2');
 
       // Global symbols with same key should be identical
       expect(turboMap.get(globalSym)).toBe('global');
       expect(turboMap.get(anotherGlobalSym)).toBe('global');
 
-      // Should have 3 unique keys total
-      expect(turboMap.size).toBe(3);
+      // Should have 2 unique keys: 1 for regular symbols, 1 for global symbols
+      expect(turboMap.size).toBe(2);
     });
   });
 
@@ -174,7 +178,7 @@ describe('Key Serialization Tests', () => {
       expect(turboMap.size).toBe(3);
     });
 
-    test('should maintain uniqueness across different key types', () => {
+    test('should maintain uniqueness across different key types (user requirement)', () => {
       const date = new Date('2024-01-15T10:30:00.000Z');
       const equivalentDate = new Date('2024-01-15T10:30:00.000Z');
       const sym1 = Symbol('test');
@@ -184,19 +188,19 @@ describe('Key Serialization Tests', () => {
 
       turboMap.set(date, 'date_value');
       turboMap.set(sym1, 'symbol1_value');
-      turboMap.set(sym2, 'symbol2_value');
+      turboMap.set(sym2, 'symbol2_value'); // 应该覆盖 symbol1_value
       turboMap.set(globalSym1, 'global_value');
 
       // Test equivalent instances
       expect(turboMap.get(equivalentDate)).toBe('date_value');
       expect(turboMap.get(globalSym2)).toBe('global_value');
 
-      // Test unique instances
-      expect(turboMap.get(sym1)).toBe('symbol1_value');
+      // 用户需求：普通 Symbol() 都被当作相同键
+      expect(turboMap.get(sym1)).toBe('symbol2_value');
       expect(turboMap.get(sym2)).toBe('symbol2_value');
 
-      // Should have 4 unique keys: 1 date + 2 regular symbols + 1 global symbol
-      expect(turboMap.size).toBe(4);
+      // Should have 3 unique keys: 1 date + 1 regular symbol + 1 global symbol
+      expect(turboMap.size).toBe(3);
     });
   });
 
@@ -213,7 +217,7 @@ describe('Key Serialization Tests', () => {
       expect(turboMap.getSerializedKey(globalSym1)).toBe(turboMap.getSerializedKey(globalSym2));
     });
 
-    test('should increment symbol counter correctly', () => {
+    test('should serialize all regular symbols consistently (user requirement)', () => {
       const sym1 = Symbol('test');
       const sym2 = Symbol('test');
       const sym3 = Symbol('other');
@@ -222,13 +226,12 @@ describe('Key Serialization Tests', () => {
       const key2 = turboMap.getSerializedKey(sym2);
       const key3 = turboMap.getSerializedKey(sym3);
 
-      // Extract counter numbers from serialized keys
-      const counter1 = parseInt(key1.match(/Symbol\.(\d+)/)?.[1] || '0');
-      const counter2 = parseInt(key2.match(/Symbol\.(\d+)/)?.[1] || '0');
-      const counter3 = parseInt(key3.match(/Symbol\.(\d+)/)?.[1] || '0');
-
-      expect(counter2).toBe(counter1 + 1);
-      expect(counter3).toBe(counter2 + 1);
+      // 用户需求：所有普通 Symbol() 都序列化为相同字符串
+      expect(key1).toBe('Symbol()');
+      expect(key2).toBe('Symbol()');
+      expect(key3).toBe('Symbol()');
+      expect(key1).toBe(key2);
+      expect(key2).toBe(key3);
     });
   });
 });

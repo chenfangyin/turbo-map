@@ -8,16 +8,17 @@ describe('AdaptiveSerializer', () => {
   });
 
   describe('Symbol Serialization', () => {
-    test('should serialize different Symbol instances with unique IDs', () => {
+    test('should serialize different Symbol instances consistently (user requirement)', () => {
       const sym1 = Symbol('test');
       const sym2 = Symbol('test');
 
       const result1 = serializer.serialize(sym1);
       const result2 = serializer.serialize(sym2);
 
-      expect(result1).not.toBe(result2);
-      expect(result1).toMatch(/^Symbol\.\d+\("test"\)$/);
-      expect(result2).toMatch(/^Symbol\.\d+\("test"\)$/);
+      // 用户需求：所有普通 Symbol() 都序列化为相同字符串
+      expect(result1).toBe(result2);
+      expect(result1).toBe('Symbol()');
+      expect(result2).toBe('Symbol()');
     });
 
     test('should serialize global symbols consistently', () => {
@@ -35,10 +36,11 @@ describe('AdaptiveSerializer', () => {
       const sym = Symbol();
       const result = serializer.serialize(sym);
 
-      expect(result).toMatch(/^Symbol\.\d+\("unnamed"\)$/);
+      // 用户需求：所有普通 Symbol() 都序列化为相同字符串
+      expect(result).toBe('Symbol()');
     });
 
-    test('should maintain symbol counter increments', () => {
+    test('should serialize all regular symbols consistently', () => {
       const sym1 = Symbol('first');
       const sym2 = Symbol('second');
       const sym3 = Symbol('third');
@@ -47,12 +49,12 @@ describe('AdaptiveSerializer', () => {
       const result2 = serializer.serialize(sym2);
       const result3 = serializer.serialize(sym3);
 
-      const counter1 = parseInt(result1.match(/Symbol\.(\d+)/)?.[1] || '0');
-      const counter2 = parseInt(result2.match(/Symbol\.(\d+)/)?.[1] || '0');
-      const counter3 = parseInt(result3.match(/Symbol\.(\d+)/)?.[1] || '0');
-
-      expect(counter2).toBe(counter1 + 1);
-      expect(counter3).toBe(counter2 + 1);
+      // 用户需求：所有普通 Symbol() 都序列化为相同字符串
+      expect(result1).toBe('Symbol()');
+      expect(result2).toBe('Symbol()');
+      expect(result3).toBe('Symbol()');
+      expect(result1).toBe(result2);
+      expect(result2).toBe(result3);
     });
 
     test('should return same serialization for same symbol instance', () => {
@@ -162,18 +164,21 @@ describe('AdaptiveSerializer', () => {
   });
 
   describe('Cache Management', () => {
-    test('should clear symbol map when clearing cache', () => {
+    test('should maintain consistent symbol serialization after cache clear', () => {
       const sym1 = Symbol('test');
       const result1 = serializer.serialize(sym1);
       
       // Clear cache
       serializer.clearCache();
       
-      // After clearing, new symbol should start from counter 1 again
+      // After clearing, symbols should still serialize consistently
       const sym2 = Symbol('test');
       const result2 = serializer.serialize(sym2);
       
-      expect(result2).toBe('Symbol.1("test")');
+      // 用户需求：所有普通 Symbol() 都序列化为相同字符串
+      expect(result1).toBe('Symbol()');
+      expect(result2).toBe('Symbol()');
+      expect(result1).toBe(result2);
     });
   });
 

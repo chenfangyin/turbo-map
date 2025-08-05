@@ -5,6 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] - 2025-01-15
+
+### 🎯 **BEHAVIOR CHANGE** - Key Consistency Feature
+
+#### **New Consistent Key Behavior**
+- 🔄 **Symbol Consistency**: All `Symbol()` instances now treated as the same key
+- 📅 **Date Consistency**: `new Date()` without parameters treated as the same key within 5-second time window
+- 🌐 **Global Symbol Support**: `Symbol.for()` still works based on global key
+
+#### **What Changed**
+```javascript
+// v1.0.8 (old behavior)
+const map = createTurboMap();
+map.set(Symbol(), 'value1');
+map.set(Symbol(), 'value2');
+console.log(map.size); // 2 - different keys
+
+// v1.0.9 (new behavior) 
+const map = createTurboMap();
+map.set(Symbol(), 'value1');
+map.set(Symbol(), 'value2'); // overwrites value1
+console.log(map.size); // 1 - same key
+console.log(map.get(Symbol())); // 'value2'
+```
+
+#### **Date Behavior**
+```javascript
+// Parameterized dates - distinct by timestamp
+map.set(new Date('2024-01-01'), 'value1');
+map.set(new Date('2024-01-02'), 'value2'); // different keys
+
+// No-parameter dates - same key within time window
+map.set(new Date(), 'current1');
+map.set(new Date(), 'current2'); // overwrites current1 (if within 5s)
+```
+
+#### **Breaking Changes**
+- ⚠️ **Symbol Behavior**: `Symbol()` instances no longer unique - all treated as same key
+- ⚠️ **Test Updates**: Updated test cases to reflect new consistent behavior
+
+### **Migration Guide**
+If you need unique Symbol keys, use `Symbol.for()` with different keys:
+```javascript
+// Instead of: Symbol('key1'), Symbol('key2')
+// Use: Symbol.for('key1'), Symbol.for('key2')
+```
+
 ## [1.0.8] - 2025-01-15
 
 ### 🚀 **CRITICAL HOTFIX** - npm Package Release Fix

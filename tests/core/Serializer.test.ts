@@ -58,10 +58,11 @@ describe('Serializer', () => {
       expect(result).toContain('[Function:');
     });
 
-    test('should handle symbols', () => {
+    test('should handle symbols consistently (user requirement)', () => {
       const sym = Symbol('test');
       const result = serializer.serialize(sym);
-      expect(result).toMatch(/^Symbol\.\d+\("test"\)$/);
+      // 用户需求：所有普通 Symbol() 都序列化为相同字符串
+      expect(result).toBe('Symbol()');
     });
 
     test('should handle dates', () => {

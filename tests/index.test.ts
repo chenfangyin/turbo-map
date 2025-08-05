@@ -130,6 +130,7 @@ describe('TurboMap Main Entry', () => {
     });
 
     test('should handle Date objects as keys correctly', () => {
+      // 有参数的 Date 应该根据时间戳区分
       const date1 = new Date('2024-01-15T10:30:00.000Z');
       const date2 = new Date('2024-01-15T10:30:00.000Z'); // Same timestamp
       const date3 = new Date('2024-01-15T10:31:00.000Z'); // Different timestamp
@@ -142,30 +143,39 @@ describe('TurboMap Main Entry', () => {
       expect(turboMap.get(date2)).toBe('value1');
       expect(turboMap.get(date3)).toBe('value3');
       
-      // Should have 2 unique keys
+      // Should have 2 unique keys for different timestamps
       expect(turboMap.size).toBe(2);
+      
+      // 无参数的 new Date() 应该被当作相同键（在时间范围内）
+      const turboMap2 = createEnhancedTurboMap<Date, string>();
+      turboMap2.set(new Date(), 'current-time');
+      
+      // 短时间内创建的 Date 应该被视为相同键
+      const result = turboMap2.get(new Date());
+      expect(result).toBe('current-time');
     });
 
-    test('should handle Symbol keys with proper uniqueness', () => {
+    test('should handle Symbol keys with proper consistency', () => {
       const sym1 = Symbol('test');
       const sym2 = Symbol('test'); // Different instance, same description
       const globalSym1 = Symbol.for('shared');
       const globalSym2 = Symbol.for('shared'); // Same global symbol
 
       turboMap.set(sym1, 'value1');
-      turboMap.set(sym2, 'value2');
+      turboMap.set(sym2, 'value2'); // 应该覆盖 sym1 的值
       turboMap.set(globalSym1, 'global_value');
 
-      // Different symbol instances should be unique
-      expect(turboMap.get(sym1)).toBe('value1');
+      // 用户需求：所有普通 Symbol() 应该被当作相同键
+      expect(turboMap.get(sym1)).toBe('value2'); // 被 sym2 覆盖
       expect(turboMap.get(sym2)).toBe('value2');
+      expect(turboMap.get(Symbol('anything'))).toBe('value2'); // 任何普通 Symbol 都返回相同值
       
       // Global symbols should be identical
       expect(turboMap.get(globalSym1)).toBe('global_value');
       expect(turboMap.get(globalSym2)).toBe('global_value');
       
-      // Should have 3 unique keys total
-      expect(turboMap.size).toBe(3);
+      // Should have 2 unique keys: one for all regular symbols, one for global symbols
+      expect(turboMap.size).toBe(2);
     });
   });
 

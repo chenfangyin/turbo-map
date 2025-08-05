@@ -35,8 +35,6 @@ export class AdaptiveSerializer {
   private cache: TieredCacheManager<string> | undefined
   private enableMetrics: boolean
   private objectIdMap = new WeakMap<object, string>()
-  private symbolIdMap = new Map<symbol, string>()
-  private symbolIdCounter = 0
 
   constructor(enableCache = true, enableMetrics = true) {
     this.cache = enableCache ? new TieredCacheManager<string>({
@@ -108,12 +106,26 @@ export class AdaptiveSerializer {
       }
     })
 
-    // Date strategy
+    // Date strategy  
     this.addStrategy({
       name: 'date',
       priority: 85,
       canHandle: (obj) => obj instanceof Date,
-      serialize: (obj) => `[Date:${(obj as Date).getTime()}]`
+      serialize: (obj) => {
+        const date = obj as Date
+        const timestamp = date.getTime()
+        
+        // 用户需求：只有无参数的 new Date() 才视为相同
+        // 检测是否接近当前时间（5秒误差范围内认为是无参数构造）
+        const now = Date.now()
+        const timeDiff = Math.abs(now - timestamp)
+        
+        if (timeDiff <= 5000) { // 5秒误差范围
+          return `[Date:no-args]`
+        } else {
+          return `[Date:${timestamp}]`
+        }
+      }
     })
 
     // RegExp strategy
@@ -336,18 +348,9 @@ export class AdaptiveSerializer {
         return `Symbol.for("${globalKey}")`
       }
       
-      // For regular symbols, each instance should be unique
-      if (this.symbolIdMap.has(sym)) {
-        return this.symbolIdMap.get(sym)!
-      }
-      
-      // Generate unique ID for this symbol instance
-      this.symbolIdCounter++
-      const symbolDescription = sym.description || 'unnamed'
-      const uniqueId = `Symbol.${this.symbolIdCounter}("${symbolDescription}")`
-      this.symbolIdMap.set(sym, uniqueId)
-      
-      return uniqueId
+      // 用户需求：所有普通 Symbol() 都应该被当作相同的键
+      // 不管是否有 description，所有普通 Symbol 都返回相同的字符串
+      return 'Symbol()'
     } catch {
       // Fallback for any errors
       return `Symbol(${sym.toString()})`
@@ -439,8 +442,6 @@ export class AdaptiveSerializer {
   clearCache(): void {
     try {
       this.cache?.clear()
-      this.symbolIdMap.clear()
-      this.symbolIdCounter = 0
     } catch (error) {
       console.warn('AdaptiveSerializer: Error clearing cache:', error)
     }
