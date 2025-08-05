@@ -1,0 +1,114 @@
+export type { MapKey, PrimitiveKey, ObjectKey } from './utils/TypeUtils';
+export { TypeUtils } from './utils/TypeUtils';
+export { ObjectPool, EnhancedObjectPool, globalObjectPool } from './utils/ObjectPool';
+export { FastHasher, globalFastHasher } from './utils/FastHash';
+export { ErrorRecoveryManager, globalErrorRecovery, ErrorType, RecoveryAction } from './utils/ErrorRecovery';
+export { EnhancedLRUCache, TieredCacheManager, type CacheStats, type TieredCacheOptions } from './core/CacheManager';
+export { AdaptiveSerializer, globalSerializer, type SerializationContext, type SerializationStrategy } from './core/Serializer';
+export { AsyncTurboMap, type AsyncTurboMapLike, type AsyncTurboMapStream, type BatchOperation, type BatchResult, type AsyncOptions } from './core/AsyncTurboMap';
+export { PluginManager, type TurboMapPlugin, type PluginContext, type PluginStats } from './plugins/PluginManager';
+export { PerformanceMonitor, MemoryAnalyzer, DiagnosticAnalyzer, globalDiagnostic, type PerformanceProfile, type MemoryDiagnostic, type ErrorAnalysis, type OptimizationSuggestion, type DiagnosticInfo } from './utils/DiagnosticUtils';
+import type { MapKey } from './utils/TypeUtils';
+import { type AsyncTurboMapLike } from './core/AsyncTurboMap';
+import { type TurboMapPlugin } from './plugins/PluginManager';
+import { type PerformanceProfile, type MemoryDiagnostic, type ErrorAnalysis, type OptimizationSuggestion } from './utils/DiagnosticUtils';
+export interface EnhancedTurboMapOptions {
+    enableCache?: boolean;
+    cacheMaxSize?: number;
+    enableAdaptiveSerialization?: boolean;
+    enableMetrics?: boolean;
+    enableAutoCleanup?: boolean;
+    cleanupInterval?: number;
+    enableTieredCache?: boolean;
+    l1CacheSize?: number;
+    l2CacheSize?: number;
+    promoteThreshold?: number;
+    enableErrorRecovery?: boolean;
+    maxRetries?: number;
+    fallbackMode?: boolean;
+    enablePlugins?: boolean;
+    pluginTimeout?: number;
+    enableDiagnostics?: boolean;
+    trackPerformance?: boolean;
+    enableAsync?: boolean;
+    batchSize?: number;
+    maxConcurrency?: number;
+}
+export interface EnhancedTurboMapLike<K extends MapKey, V> {
+    readonly size: number;
+    set(key: K, value: V): this;
+    get(key: K): V | undefined;
+    has(key: K): boolean;
+    delete(key: K): boolean;
+    clear(): void;
+    entries(): IterableIterator<[K, V]>;
+    keys(): IterableIterator<K>;
+    values(): IterableIterator<V>;
+    forEach(callback: (value: V, key: K, map: this) => void): void;
+    [Symbol.iterator](): IterableIterator<[K, V]>;
+    readonly [Symbol.toStringTag]: string;
+    getSerializedKey(key: K): string;
+    setAll(entries: [K, V][]): this;
+    getAll(keys: K[]): (V | undefined)[];
+    deleteAll(keys: K[]): boolean[];
+    findByValue(predicate: (value: V, key: K) => boolean): [K, V] | undefined;
+    filter(predicate: (value: V, key: K) => boolean): [K, V][];
+    mapValues<U>(transform: (value: V, key: K) => U): EnhancedTurboMapLike<K, U>;
+    getMetrics(): {
+        size: number;
+        operationCount: number;
+        cacheHits: number;
+        cacheMisses: number;
+        cacheHitRate: number;
+        errorCount: number;
+        errorRate: number;
+        pluginStats?: unknown;
+        cacheStats?: unknown;
+        serializerStats?: unknown;
+    };
+    debug(): {
+        size: number;
+        internalMapSize: number;
+        keyMapSize: number;
+        config: unknown;
+        health: unknown;
+        diagnostics: unknown;
+    };
+    getDiagnostics(): {
+        performanceProfile: PerformanceProfile;
+        memoryUsage: MemoryDiagnostic;
+        errorAnalysis: ErrorAnalysis;
+        optimizationSuggestions: OptimizationSuggestion[];
+        healthScore: number;
+        recommendations: string[];
+    } | null;
+    getHealthStatus(): {
+        healthy: boolean;
+        errorRate: number;
+        cacheHitRate: number;
+        inFallbackMode: boolean;
+        score: number;
+    };
+    addPlugin(plugin: TurboMapPlugin<K, V>): Promise<boolean>;
+    removePlugin(pluginName: string): Promise<boolean>;
+    enablePlugin(pluginName: string): Promise<boolean>;
+    disablePlugin(pluginName: string): Promise<boolean>;
+    getPluginStats(): {
+        totalPlugins: number;
+        enabledPlugins: number;
+        totalExecutions: number;
+        totalErrors: number;
+        errorRate: number;
+    } | null;
+    toAsync(): AsyncTurboMapLike<K, V>;
+    optimize(): void;
+    reset(): void;
+    serialize(): string;
+    clone(): EnhancedTurboMapLike<K, V>;
+    cleanup(): void;
+    compact(): void;
+}
+export declare function createEnhancedTurboMap<K extends MapKey, V>(entriesOrOptions?: readonly (readonly [K, V])[] | Iterable<readonly [K, V]> | EnhancedTurboMapOptions | null, optionsParam?: EnhancedTurboMapOptions): EnhancedTurboMapLike<K, V>;
+export default createEnhancedTurboMap;
+export { createEnhancedTurboMap as createTurboMap };
+//# sourceMappingURL=index.d.ts.map
