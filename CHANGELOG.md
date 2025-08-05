@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2025-01-15
+
+### 🚀 **CRITICAL HOTFIX** - npm Package Release Fix
+
+#### **The Real Symbol Serialization Fix**
+- 🔥 **Emergency Fix**: v1.0.7 npm package didn't contain the actual Symbol fix
+- ✅ **Verified npm Package**: This version (v1.0.8) confirmed to contain the correct Symbol serialization logic
+- 🔧 **Proper Symbol Handling**: Each `Symbol()` instance now correctly gets unique serialization keys
+- 🌐 **Global Symbol Support**: `Symbol.for()` correctly treated as identical keys
+
+#### **What was Wrong in v1.0.7 npm package**
+- ❌ npm package still contained old buggy code: `Symbol(${obj.toString()})`
+- ❌ Different Symbol instances incorrectly treated as identical
+- ❌ `turboMap.get(Symbol())` returned same value (bug behavior)
+
+#### **What's Fixed in v1.0.8**
+- ✅ npm package contains correct code: `serializeSymbol()` method
+- ✅ Different Symbol instances correctly treated as unique
+- ✅ `turboMap.get(Symbol())` correctly returns `undefined`
+
+### **Verification**
+```javascript
+import { createTurboMap } from 'turbo-map'; // v1.0.8
+const turboMap = createTurboMap();
+turboMap.set(Symbol(), 14);
+console.log(turboMap.get(Symbol())); // ✅ undefined (correct)
+```
+
 ## [1.0.7] - 2025-01-15
 
 ### 🐛 Critical Symbol Serialization Bug Fix

@@ -1,6 +1,6 @@
 {
   "name": "turbo-map",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "description": "High-performance, type-safe Map implementation supporting complex nested objects as keys, fully compatible with ES Map API",
   "icon": "assets/logo.svg",
